@@ -12,8 +12,12 @@ export function ThemeToggle() {
     const initialDark = root.classList.contains("dark") || prefersDark;
 
     root.classList.toggle("dark", initialDark);
-    setIsDark(initialDark);
-    setReady(true);
+    // Use a small timeout or requestAnimationFrame to defer state update slightly
+    // to avoid synchronously triggering re-render in effect.
+    setTimeout(() => {
+      setIsDark(initialDark);
+      setReady(true);
+    }, 0);
   }, []);
 
   function toggleTheme() {

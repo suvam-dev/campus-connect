@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 
 import { SiteShell } from "@/components/site-shell";
+import { BookmarkCard } from "@/components/bookmark-card";
+import { TimelineItem } from "@/components/timeline-item";
 
 export const metadata: Metadata = {
   title: "Bookmarks | Campus Connect",
@@ -108,28 +110,7 @@ export default function BookmarksPage() {
               </div>
               <div className="mt-6 grid gap-4 md:grid-cols-2">
                 {savedItems.map((item, index) => (
-                  <article
-                    key={item.title}
-                    className="rounded-[1.4rem] border border-[color:var(--outline-variant)]/70 bg-white/75 p-5 transition hover:-translate-y-0.5 hover:shadow-[0_16px_30px_rgba(17,36,68,0.08)] dark:bg-white/6"
-                  >
-                    <div
-                      className={`flex h-11 w-11 items-center justify-center rounded-2xl text-xs font-bold uppercase tracking-[0.16em] text-white ${
-                        index === 0
-                          ? "bg-[#c19322]"
-                          : index === 1
-                            ? "bg-[#123d71]"
-                            : "bg-[#4b6076]"
-                      }`}
-                    >
-                      {item.code}
-                    </div>
-                    <h3 className="mt-4 text-lg font-semibold leading-7 text-[color:var(--foreground)]">
-                      {item.title}
-                    </h3>
-                    <p className="mt-2 text-sm leading-6 text-[color:var(--muted)]">
-                      {item.description}
-                    </p>
-                  </article>
+                  <BookmarkCard key={item.title} item={item} index={index} />
                 ))}
               </div>
             </div>
@@ -138,29 +119,12 @@ export default function BookmarksPage() {
               <h2 className="section-title">Registered Events</h2>
               <div className="relative mt-8 border-l border-[color:var(--outline-variant)] pl-6">
                 {timeline.map((item, index) => (
-                  <article
+                  <TimelineItem
                     key={item.title}
-                    className={index === timeline.length - 1 ? "pb-0" : "pb-8"}
-                  >
-                    <span
-                      className={`absolute -left-[7px] mt-1 h-3.5 w-3.5 rounded-full ${item.tone}`}
-                      style={{ top: `${index * 136 + 4}px` }}
-                    />
-                    <div className={item.status === "Completed" ? "opacity-70" : ""}>
-                      <div className="flex flex-wrap items-center gap-3">
-                        <h3 className="text-lg font-semibold text-[color:var(--foreground)]">
-                          {item.title}
-                        </h3>
-                        <span className="rounded-full bg-[color:var(--secondary-soft)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[color:var(--secondary-deep)]">
-                          {item.status}
-                        </span>
-                      </div>
-                      <p className="mt-2 text-sm text-[color:var(--muted)]">{item.meta}</p>
-                      <p className="mt-2 text-sm leading-6 text-[color:var(--foreground)]">
-                        {item.description}
-                      </p>
-                    </div>
-                  </article>
+                    item={item}
+                    index={index}
+                    isLast={index === timeline.length - 1}
+                  />
                 ))}
               </div>
             </div>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { SiteShell } from "@/components/site-shell";
+import { NoticeCard } from "@/components/notice-card";
 
 export const metadata: Metadata = {
   title: "Notices | Campus Connect",
@@ -97,37 +98,7 @@ export default function NoticesPage() {
 
         <div className="grid gap-4">
           {notices.map((notice) => (
-            <article
-              key={notice.title}
-              className="surface-card relative overflow-hidden p-6 sm:p-7"
-            >
-              <div className={`absolute inset-y-0 left-0 w-1 ${notice.accent}`} />
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                <div className="flex items-center gap-3">
-                  <span className="rounded-full bg-[color:var(--secondary-soft)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[color:var(--secondary-deep)]">
-                    {notice.tag}
-                  </span>
-                  {notice.tag === "Academic" ? (
-                    <span className="h-2.5 w-2.5 rounded-full bg-[#bf2d2d]" />
-                  ) : null}
-                </div>
-                <p className="text-xs uppercase tracking-[0.18em] text-[color:var(--muted)]">
-                  {notice.date}
-                </p>
-              </div>
-              <h2 className="mt-4 text-2xl font-semibold leading-9 text-[color:var(--primary)]">
-                {notice.title}
-              </h2>
-              <p className="mt-3 max-w-3xl text-sm leading-7 text-[color:var(--muted)]">
-                {notice.description}
-              </p>
-              <div className="mt-5 flex flex-col gap-3 border-t border-[color:var(--outline-variant)]/70 pt-5 sm:flex-row sm:items-center sm:justify-between">
-                <p className="text-sm text-[color:var(--muted)]">{notice.source}</p>
-                <button className="text-left text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--secondary)]">
-                  Read More
-                </button>
-              </div>
-            </article>
+            <NoticeCard key={notice.title} notice={notice} />
           ))}
 
           <button className="mx-auto mt-4 rounded-full border border-[color:var(--outline-variant)] bg-white/80 px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--primary)] dark:bg-white/6">

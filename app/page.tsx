@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { SiteShell } from "@/components/site-shell";
+import { QuickLinkCard } from "@/components/quick-link-card";
+import { HomeNoticeItem } from "@/components/home-notice-item";
+import { HomeEventCard } from "@/components/home-event-card";
 
 export const metadata: Metadata = {
   title: "Campus Connect | IIT Kharagpur",
@@ -114,23 +117,7 @@ export default function HomePage() {
             </div>
             <div className="mt-6 grid gap-3">
               {quickLinks.map((item) => (
-                <div
-                  key={item.title}
-                  className="flex items-center justify-between rounded-[1.2rem] border border-[color:var(--outline-variant)]/70 bg-white/70 px-4 py-4 transition hover:-translate-y-0.5 hover:shadow-[0_16px_30px_rgba(17,36,68,0.08)] dark:bg-white/6"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--primary)] text-xs font-bold uppercase tracking-[0.16em] text-white">
-                      {item.code}
-                    </div>
-                    <div>
-                      <p className="font-semibold text-[color:var(--foreground)]">{item.title}</p>
-                      <p className="text-sm text-[color:var(--muted)]">{item.detail}</p>
-                    </div>
-                  </div>
-                  <span className="text-sm font-semibold uppercase tracking-[0.2em] text-[color:var(--secondary)]">
-                    Open
-                  </span>
-                </div>
+                <QuickLinkCard key={item.title} item={item} />
               ))}
             </div>
           </div>
@@ -144,17 +131,7 @@ export default function HomePage() {
             </div>
             <div className="mt-6 grid gap-4">
               {notices.map((notice) => (
-                <div
-                  key={notice.title}
-                  className="border-b border-[color:var(--outline-variant)]/70 pb-4 last:border-b-0 last:pb-0"
-                >
-                  <p className="text-xs uppercase tracking-[0.2em] text-[color:var(--muted)]">
-                    {notice.date}
-                  </p>
-                  <p className="mt-2 text-base font-semibold text-[color:var(--foreground)]">
-                    {notice.title}
-                  </p>
-                </div>
+                <HomeNoticeItem key={notice.title} notice={notice} />
               ))}
             </div>
           </div>
@@ -172,38 +149,7 @@ export default function HomePage() {
           </div>
           <div className="mt-7 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {events.map((event, index) => (
-              <article
-                key={event.title}
-                className="overflow-hidden rounded-[1.6rem] border border-[color:var(--outline-variant)]/70 bg-white/72 shadow-[0_18px_40px_rgba(17,36,68,0.08)] transition hover:-translate-y-1 hover:shadow-[0_22px_48px_rgba(17,36,68,0.14)] dark:bg-white/6"
-              >
-                <div
-                  className={`h-40 ${
-                    index === 0
-                      ? "bg-[linear-gradient(135deg,#082447,#234a73)]"
-                      : index === 1
-                        ? "bg-[linear-gradient(135deg,#7a4d09,#bb8c2e)]"
-                        : "bg-[linear-gradient(135deg,#113240,#27657d)]"
-                  } p-5 text-white`}
-                >
-                  <div className="flex h-full flex-col justify-between">
-                    <div className="rounded-2xl bg-white/14 px-3 py-2 backdrop-blur">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.22em]">
-                        {event.month}
-                      </p>
-                      <p className="mt-1 font-serif text-3xl">{event.day}</p>
-                    </div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/74">
-                      {event.tag}
-                    </p>
-                  </div>
-                </div>
-                <div className="p-5">
-                  <h3 className="text-lg font-semibold leading-7 text-[color:var(--foreground)]">
-                    {event.title}
-                  </h3>
-                  <p className="mt-3 text-sm text-[color:var(--muted)]">{event.location}</p>
-                </div>
-              </article>
+              <HomeEventCard key={event.title} event={event} index={index} />
             ))}
           </div>
         </div>
