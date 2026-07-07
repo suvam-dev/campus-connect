@@ -1,6 +1,5 @@
 "use client";
 
-import React from 'react';
 import { PageLayout } from '@/components/layouts';
 import { HeroCard } from '@/components/HeroCard';
 import { NoticeCard } from '@/components/NoticeCard';
