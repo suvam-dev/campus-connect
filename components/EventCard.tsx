@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { MapPin, Clock, ArrowRight } from 'lucide-react';
 import { cn } from './lib/utils';
 import { Card, CardContent } from './ui/card';
-import { Button } from './ui/button';
+import { Button, buttonVariants } from './ui/button';
 
 interface EventCardProps {
   id?: string;
@@ -104,24 +104,25 @@ export function EventCard({ id, title, venue, date, imageUrl, tags, index = 0, c
               )}
                 
               <div className="flex items-center gap-4 mt-auto ">
-                <Button variant="outline" size="icon" className="h-12 flex-2 shrink-0 rounded-xl border-slate-200 text-slate-600 hover:text-[#5235FF] hover:bg-indigo-50 hover:border-indigo-200 transition-colors shadow-none" asChild>
-                   {id ? (
-                    <Link href={`/events/${id}`}>
-                      <ArrowRight className="w-[22px] h-[22px]" />
-                    </Link>
-                  ) : (
-                    <Link href="#">
-                      <ArrowRight className="w-[22px] h-[22px]" />
-                    </Link>
-                  )}
-                </Button>
-                <Button className=" flex-5  bg-[#5235FF] hover:bg-indigo-700 text-white rounded-md h-12 font-semibold text-[15px] shadow-none hover:shadow-sm transition-all" asChild={!!id}>
-                   {id ? (
-                     <Link href={`/events/${id}`}>Register</Link>
-                   ) : (
-                     <Link href="#">Register</Link>
-                   )}
-                </Button>
+                <Link 
+                  href={id ? `/events/${id}` : "#"} 
+                  className={cn(buttonVariants({ variant: "outline", size: "icon" }), "h-12 flex-2 shrink-0 rounded-xl border-slate-200 text-slate-600 hover:text-[#5235FF] hover:bg-indigo-50 hover:border-indigo-200 transition-colors shadow-none")}
+                >
+                  <ArrowRight className="w-[22px] h-[22px]" />
+                </Link>
+                
+                {id ? (
+                  <Link 
+                    href={`/events/${id}`}
+                    className={cn(buttonVariants({ variant: "default" }), "flex-5 bg-[#5235FF] hover:bg-indigo-700 text-white rounded-md h-12 font-semibold text-[15px] shadow-none hover:shadow-sm transition-all")}
+                  >
+                    Register
+                  </Link>
+                ) : (
+                  <Button className="flex-5 bg-[#5235FF] hover:bg-indigo-700 text-white rounded-md h-12 font-semibold text-[15px] shadow-none hover:shadow-sm transition-all">
+                    Coming Soon
+                  </Button>
+                )}
               </div>
             </>
           ) : (

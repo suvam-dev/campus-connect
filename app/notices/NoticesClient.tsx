@@ -95,15 +95,13 @@ export default function NoticesClient({ initialNotices }: { initialNotices: any[
           </div>
           <div className="relative w-64 h-64 hidden md:block shrink-0">
             <div className="absolute inset-0 bg-gradient-to-tr from-indigo-100 to-purple-50 rounded-full blur-3xl opacity-60" />
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 text-indigo-500 opacity-80 animate-bounce">
-              <svg viewBox="0 0 24 24" fill="currentColor" className="w-32 h-32 rotate-[-20deg]">
-                <path d="M12 2C10.9 2 10 2.9 10 4V14L6.3 11.2C5.9 10.9 5.5 10.8 5 10.8H3C1.9 10.8 1 11.7 1 12.8V16.8C1 17.9 1.9 18.8 3 18.8H5C5.5 18.8 5.9 18.7 6.3 18.4L10 15.6V20C10 21.1 10.9 22 12 22C13.1 22 14 21.1 14 20V4C14 2.9 13.1 2 12 2ZM20.7 7.3L19.3 8.7C20.4 9.8 21 11.3 21 13C21 14.7 20.4 16.2 19.3 17.3L20.7 18.7C22.2 17.2 23 15.2 23 13C23 10.8 22.2 8.8 20.7 7.3ZM16.5 11.5L15.1 12.9C15.6 13.4 16 14.2 16 15C16 15.8 15.6 16.6 15.1 17.1L16.5 18.5C17.4 17.6 18 16.4 18 15C18 13.6 17.4 12.4 16.5 11.5Z" />
-              </svg>
-            </div>
-            {/* Sparkles */}
-            <div className="absolute top-4 left-10 text-amber-400">✦</div>
-            <div className="absolute bottom-8 left-20 text-purple-400">✦</div>
-            <div className="absolute top-10 right-4 text-indigo-300">✦</div>
+            <Image 
+              src="/images/notice-meghaphone.png" 
+              alt="Announcement Megaphone" 
+              fill
+              className="object-contain drop-shadow-2xl animate-in fade-in slide-in-from-right-8 duration-700 scale-135 transition-transform"
+              priority
+            />
           </div>
         </div>
 
