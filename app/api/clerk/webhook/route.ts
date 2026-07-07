@@ -1,4 +1,4 @@
-import { upsertClerkUser } from '../../../../lib/clerkSync';
+import { upsertClerkUser, detectClerkSDK } from '../../../../lib/clerkSync';
 
 // Next.js App Router route handler
 export async function POST(req: Request) {
@@ -43,6 +43,8 @@ export async function POST(req: Request) {
   }
 
   try {
+    const sdk = detectClerkSDK();
+    console.log('Detected Clerk SDK:', sdk);
     const user = await upsertClerkUser({ clerkId, email, name, phone, profileImage });
     console.log('Clerk webhook processed:', { eventType, clerkId, email, userId: user?._id });
     return new Response('ok');
