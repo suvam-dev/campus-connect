@@ -135,6 +135,25 @@ async function main() {
     { upsert: true, new: true }
   );
 
+  // Create an example Permission grant for Bob (society admin)
+  const Permission = require('../models/Permission').default;
+  try {
+    await Permission.findOneAndUpdate(
+      { user: bob._id, society: ieee._id },
+      {
+        $set: {
+          user: bob._id,
+          society: ieee._id,
+          permissions: ['canCreateEvent', 'canEditEvent', 'canViewRegistrations', 'canExportCSV', 'canInviteAdmins'],
+          createdBy: superAdmin._id,
+        },
+      },
+      { upsert: true, new: true }
+    );
+  } catch (err) {
+    console.warn('Failed to create permission grant', err?.message || err);
+  }
+
   console.log('Seeding complete.');
   process.exit(0);
 }
