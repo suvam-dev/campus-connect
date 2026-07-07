@@ -84,8 +84,25 @@ export default function NoticesClient({ initialNotices }: { initialNotices: any[
       <div className="max-w-7xl mx-auto w-full pt-8 pb-16">
         
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row items-center justify-between mb-12 px-2">
-          <div className="max-w-2xl mb-8 md:mb-0">
+        <div className="relative flex flex-col md:flex-row items-center justify-between mb-12 p-8 md:p-12 bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+          {/* Background Decorative Waves */}
+          <div className="absolute inset-0 pointer-events-none opacity-40">
+            {/* Top Wave */}
+            <svg className="absolute top-0 left-0 w-full text-indigo-50" viewBox="0 0 1440 320" preserveAspectRatio="none">
+              <path fill="currentColor" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,149.3C960,160,1056,160,1152,138.7C1248,117,1344,75,1392,53.3L1440,32L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"></path>
+            </svg>
+            
+            {/* Bottom Wave */}
+            <svg className="absolute bottom-0 left-0 w-full transform rotate-180 text-purple-50" viewBox="0 0 1440 320" preserveAspectRatio="none">
+              <path fill="currentColor" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,149.3C960,160,1056,160,1152,138.7C1248,117,1344,75,1392,53.3L1440,32L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"></path>
+            </svg>
+
+            {/* Glowing Orbs */}
+            <div className="absolute top-[-20%] left-[-10%] w-96 h-96 bg-indigo-100/50 rounded-full blur-3xl" />
+            <div className="absolute bottom-[-20%] right-[20%] w-80 h-80 bg-purple-100/50 rounded-full blur-3xl" />
+          </div>
+
+          <div className="relative z-10 max-w-2xl mb-8 md:mb-0">
             <h1 className="text-4xl md:text-5xl font-black tracking-tight text-[#0B1527] mb-4">
               Notice Board
             </h1>
@@ -93,7 +110,7 @@ export default function NoticesClient({ initialNotices }: { initialNotices: any[
               Stay informed with the latest academic and administrative announcements.
             </p>
           </div>
-          <div className="relative w-64 h-64 hidden md:block shrink-0">
+          <div className="relative z-10 w-64 h-64 hidden md:block shrink-0">
             <div className="absolute inset-0 bg-gradient-to-tr from-indigo-100 to-purple-50 rounded-full blur-3xl opacity-60" />
             <Image 
               src="/images/notice-meghaphone.png" 
