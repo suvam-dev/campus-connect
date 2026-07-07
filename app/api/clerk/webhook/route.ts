@@ -4,6 +4,15 @@ import { upsertClerkUser } from '../../../../lib/clerkSync';
 export async function POST(req: Request) {
   const raw = await req.text();
 
+  // Verify signature if secret is configured
+  const signatureHeader = req.headers.get('clerk-signature') || req.headers.get('x-clerk-signature') || req.headers.get('Clerk-Signature');
+  const { verifyClerkWebhook } = await import('../../../../lib/verifyClerkWebhook');
+  const ok = verifyClerkWebhook(raw, signatureHeader);
+  if (!ok) {
+    console.warn('Clerk webhook signature verification failed');
+    return new Response('invalid signature', { status: 401 });
+  }
+
   let payload: any;
   try {
     payload = JSON.parse(raw);
