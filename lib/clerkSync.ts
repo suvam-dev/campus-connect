@@ -2,6 +2,8 @@ import { connectDB } from './mongodb';
 import User from '../models/User';
 import fs from 'fs';
 import path from 'path';
+import Invite from '../models/Invite';
+import Society from '../models/Society';
 
 export type ClerkProfile = {
   clerkId?: string;
@@ -70,6 +72,9 @@ function normalizeClerkPayload(raw: any): ClerkProfile {
 
 /**
  * Upsert a local user using Clerk data. Accepts either a normalized ClerkProfile or a raw Clerk webhook payload/object.
+ *
+ * After creating/updating the user, auto-accept any pending Invite matching the user's email (and not expired).
+ * If invite.role === 'society_admin', the user is added to the society admins array and given role 'society_admin'.
  */
 export async function upsertClerkUser(profileOrRaw: ClerkProfile | any) {
   await connectDB();
@@ -98,5 +103,67 @@ export async function upsertClerkUser(profileOrRaw: ClerkProfile | any) {
   const opts = { upsert: true, new: true, setDefaultsOnInsert: true };
 
   const user = await User.findOneAndUpdate(query, { $set: update }, opts);
+
+  // Auto-accept pending invite (if any)
+  try {
+    if (email) {
+      const now = new Date();
+      const invite = await Invite.findOne({ email: email.toLowerCase(), status: 'pending', expiresAt: { $gt: now } });
+      if (invite) {
+        // Apply invite role
+        if (invite.role === 'society_admin') {
+          // Add society to user's societies and add to Society.admins
+          if (!user.societies) user.societies = [];
+          const sid = invite.society;
+          if (!user.societies.find((x: any) => x.toString() === sid.toString())) user.societies.push(sid);
+
+          // Update user's role to society_admin if not already elevated
+          if (user.role !== 'super_admin') {
+            user.role = 'society_admin';
+          }
+
+          // Ensure society record has this user in admins
+          try {
+            const society = await Society.findById(sid);
+            if (society) {
+              society.admins = society.admins || [];
+              if (!society.admins.find((id: any) => id.toString() === user._id.toString())) {
+                society.admins.push(user._id);
+                await society.save();
+              }
+            }
+          } catch (err) {
+            console.warn('Failed to attach user to society admins:', err?.message || err);
+          }
+        } else if (invite.role === 'student') {
+          // Add user to society members
+          const sid = invite.society;
+          if (!user.societies) user.societies = [];
+          if (!user.societies.find((x: any) => x.toString() === sid.toString())) user.societies.push(sid);
+
+          try {
+            const society = await Society.findById(sid);
+            if (society) {
+              society.members = society.members || [];
+              if (!society.members.find((id: any) => id.toString() === user._id.toString())) {
+                society.members.push(user._id);
+                await society.save();
+              }
+            }
+          } catch (err) {
+            console.warn('Failed to attach user to society members:', err?.message || err);
+          }
+        }
+
+        invite.status = 'accepted';
+        await invite.save();
+        await user.save();
+        console.log('Accepted invite for user', email, 'society', invite.society.toString());
+      }
+    }
+  } catch (err) {
+    console.warn('Invite processing error:', err?.message || err);
+  }
+
   return user;
 }
