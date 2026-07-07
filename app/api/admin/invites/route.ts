@@ -13,7 +13,7 @@ export async function POST(req: Request) {
 
   try {
     // Only admins of the society or super_admin can invite
-    const user = await requireAdmin(headers, society, 'canInviteAdmins');
+    const user = await requireAdmin(req, society, 'canInviteAdmins');
 
     const token = `invite_${uuidv4()}`;
     const invite = await Invite.findOneAndUpdate(

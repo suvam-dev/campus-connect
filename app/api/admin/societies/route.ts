@@ -4,10 +4,9 @@ import { getCurrentUserFromReq } from '../../../../lib/adminAuth';
 
 export async function GET(req: Request) {
   await connectDB();
-  const headers = req.headers;
 
   // allow unauthenticated read if CLERK_SKIP_AUTH or public
-  const user = await getCurrentUserFromReq(headers);
+  const user = await getCurrentUserFromReq(req);
 
   try {
     if (user && user.role === 'super_admin') {

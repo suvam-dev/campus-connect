@@ -4,14 +4,13 @@ import { requireAdmin } from '../../../../lib/adminAuth';
 
 export async function GET(req: Request) {
   await connectDB();
-  const headers = req.headers;
   const url = new URL(req.url);
   const eventId = url.searchParams.get('eventId');
   if (!eventId) return new Response('eventId required', { status: 400 });
 
   try {
-    // need society context to authorize — assume event contains society in future; for now require super_admin or allow CLERK_SKIP_AUTH
-    const user = await requireAdmin(headers, undefined, undefined);
+    // need society context to authorize — require admin or super_admin
+    const user = await requireAdmin(req, undefined, undefined);
     if (!user) return new Response('unauthenticated', { status: 401 });
 
     const regs = await Registration.find({ event: eventId }).populate('user', 'name email rollNumber department year phone').lean();

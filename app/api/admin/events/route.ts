@@ -4,14 +4,13 @@ import { requireAdmin } from '../../../../lib/adminAuth';
 
 export async function POST(req: Request) {
   await connectDB();
-  const headers = req.headers;
   const body = await req.json();
 
   const societyId = body.society;
   if (!societyId) return new Response('society required', { status: 400 });
 
   try {
-    const user = await requireAdmin(headers, societyId, 'canCreateEvent');
+    const user = await requireAdmin(req, societyId, 'canCreateEvent');
 
     const e = new Event({
       title: body.title,

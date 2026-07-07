@@ -1,33 +1,52 @@
 import { connectDB } from './mongodb';
 import User from '../models/User';
 import { checkPermission } from './rbac';
+import { getAuth } from '@clerk/nextjs/server';
 
 /**
- * Lightweight admin auth helper.
- * - In production, set up Clerk and the reverse proxy to inject 'x-clerk-id' header or integrate @clerk/nextjs and adapt this helper.
- * - For local dev, set CLERK_SKIP_AUTH=true to bypass auth (not for production).
+ * Admin auth helper using Clerk's server SDK.
+ * - For local dev, set CLERK_SKIP_AUTH=true to bypass auth (returns seeded super_admin).
+ * - In production, uses getAuth(req) to obtain Clerk userId and maps to local User.clerkId.
  */
-export async function getCurrentUserFromReq(headers: Headers) {
+export async function getCurrentUserFromReq(reqOrHeaders: Request | Headers) {
   await connectDB();
 
   const skip = process.env.CLERK_SKIP_AUTH === 'true';
   if (skip) {
-    // Return a super_admin seeded user if present
     const su = await User.findOne({ role: 'super_admin' }).lean();
     if (su) return su;
     return null;
   }
 
-  // Expect integration to provide a clerk-id header (x-clerk-id)
-  const clerkId = headers.get('x-clerk-id') || headers.get('x-clerk-user-id');
-  if (!clerkId) return null;
+  // If a Request is provided, use Clerk getAuth
+  try {
+    // getAuth accepts undefined in some versions; pass the Request when available
+    const maybeReq = (reqOrHeaders as Request) || undefined;
+    const auth = getAuth(maybeReq as any);
+    const clerkUserId = auth?.userId || auth?.user_id || null;
+    if (clerkUserId) {
+      const user = await User.findOne({ clerkId: clerkUserId }).lean();
+      return user || null;
+    }
+  } catch (err) {
+    // fall back to header parsing if Request not available or Clerk not configured
+  }
 
-  const user = await User.findOne({ clerkId }).lean();
-  return user || null;
+  // Finally, if headers were passed, try legacy header
+  const headers = reqOrHeaders as Headers;
+  if (headers && typeof headers.get === 'function') {
+    const clerkId = headers.get('x-clerk-id') || headers.get('x-clerk-user-id');
+    if (clerkId) {
+      const user = await User.findOne({ clerkId }).lean();
+      return user || null;
+    }
+  }
+
+  return null;
 }
 
-export async function requireAdmin(headers: Headers, societyId?: string, permission?: string) {
-  const user = await getCurrentUserFromReq(headers);
+export async function requireAdmin(reqOrHeaders: Request | Headers, societyId?: string, permission?: string) {
+  const user = await getCurrentUserFromReq(reqOrHeaders);
   if (!user) throw new Error('unauthenticated');
   if (user.role === 'super_admin') return user;
   if (societyId && permission) {
