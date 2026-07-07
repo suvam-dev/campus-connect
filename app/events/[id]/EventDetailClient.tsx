@@ -1,23 +1,24 @@
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
 import { PageLayout } from '@/components/layouts';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { CalendarDays, MapPin, Clock, ArrowLeft, Share2, Bookmark, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
+import RegisterButton from '@/components/shared/RegisterButton';
+import RichTextRenderer from '@/components/shared/RichTextRenderer';
 
-export default function EventDetailClient({ event }: { event: any }) {
-  const [isRegistered, setIsRegistered] = useState(false);
-
-  const handleRegister = () => {
-    // Show a success toast or mock registration state
-    setIsRegistered(true);
-    setTimeout(() => {
-      alert("Successfully registered for " + event.title + "!");
-    }, 100);
-  };
+export default function EventDetailClient({ 
+  event, 
+  isRegisteredInitial = false,
+  registrationIdInitial
+}: { 
+  event: any, 
+  isRegisteredInitial?: boolean,
+  registrationIdInitial?: string
+}) {
 
   return (
     <PageLayout>
@@ -72,9 +73,9 @@ export default function EventDetailClient({ event }: { event: any }) {
               className="prose prose-slate max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-a:text-indigo-600"
             >
               <h2 className="text-2xl font-bold text-slate-900 mb-4">About this Event</h2>
-              <p className="text-slate-600 text-lg leading-relaxed whitespace-pre-wrap mb-8">
-                {event.description}
-              </p>
+              <div className="mb-8">
+                <RichTextRenderer content={event.description} />
+              </div>
               
               <h3 className="text-xl font-bold text-slate-900 mb-4 mt-8">Tags & Topics</h3>
               <div className="flex flex-wrap gap-2 mb-8">
@@ -127,33 +128,7 @@ export default function EventDetailClient({ event }: { event: any }) {
                     </div>
                   </div>
 
-                  <AnimatePresence mode="wait">
-                    {isRegistered ? (
-                      <motion.div
-                        key="registered"
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="w-full bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-2xl py-4 flex flex-col items-center justify-center gap-2"
-                      >
-                        <CheckCircle2 className="w-6 h-6 text-emerald-500" />
-                        <span className="font-bold text-sm">You're Registered!</span>
-                      </motion.div>
-                    ) : (
-                      <motion.div
-                        key="unregistered"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0, scale: 0.95 }}
-                      >
-                        <Button 
-                          onClick={handleRegister}
-                          className="w-full h-12 text-base font-bold rounded-2xl bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-600/20"
-                        >
-                          Register Now
-                        </Button>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                  <RegisterButton eventId={event.id} isRegisteredInitial={isRegisteredInitial} registrationIdInitial={registrationIdInitial} />
                   
                   <p className="text-xs text-center text-slate-400 mt-4 font-medium">
                     Limited seats available. Register early!

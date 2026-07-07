@@ -1,13 +1,15 @@
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { PageLayout } from '@/components/layouts';
-import { PageHeader, FilterBar, CardGrid } from '@/components/shared';
+import { PageHeader, FilterBar, CardGrid, EmptyState } from '@/components/shared';
 import { Calendar, MapPin, Bookmark } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { extractPlainText } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
 const FILTER_OPTIONS = [
@@ -30,27 +32,35 @@ const CATEGORY_COLORS: Record<string, string> = {
 };
 
 export default function EventsClient({ initialEvents }: { initialEvents: any[] }) {
-  const [filteredEvents, setFilteredEvents] = useState(initialEvents);
-  const [searchQuery, setSearchQuery] = useState('');
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // We no longer need state for filteredEvents since we fetch them from server based on URL
+  const events = initialEvents;
 
   const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    const filtered = initialEvents.filter(event =>
-      event.title.toLowerCase().includes(query.toLowerCase()) ||
-      event.venue.toLowerCase().includes(query.toLowerCase())
-    );
-    setFilteredEvents(filtered);
+    const params = new URLSearchParams(searchParams.toString());
+    if (query) {
+      params.set('q', query);
+    } else {
+      params.delete('q');
+    }
+    router.push(`/events?${params.toString()}`);
   };
 
   const handleFilterChange = (filters: string[]) => {
-    if (filters.length === 0 || filters.includes('all')) {
-      setFilteredEvents(initialEvents);
+    const params = new URLSearchParams(searchParams.toString());
+    
+    // Remove 'all' or empty
+    const activeFilters = filters.filter(f => f !== 'all');
+    
+    if (activeFilters.length > 0) {
+      params.set('categories', activeFilters.join(','));
     } else {
-      const filtered = initialEvents.filter(event =>
-        filters.some(f => event.category.toLowerCase().includes(f))
-      );
-      setFilteredEvents(filtered);
+      params.delete('categories');
     }
+    
+    router.push(`/events?${params.toString()}`);
   };
 
   return (
@@ -66,18 +76,20 @@ export default function EventsClient({ initialEvents }: { initialEvents: any[] }
           filters={FILTER_OPTIONS}
           onSearch={handleSearch}
           onFilterChange={handleFilterChange}
+          initialSearch={searchParams.get('q') || ''}
+          initialFilters={searchParams.get('categories') ? searchParams.get('categories')!.split(',') : []}
         />
       </div>
 
       <div className="mb-6 flex items-center justify-between">
         <p className="text-sm font-medium text-slate-500">
-          Showing {filteredEvents.length} event{filteredEvents.length !== 1 ? 's' : ''}
+          Showing {events.length} event{events.length !== 1 ? 's' : ''}
         </p>
       </div>
 
-      {filteredEvents.length > 0 ? (
+      {events.length > 0 ? (
         <CardGrid cols="3" gap="lg">
-          {filteredEvents.map((event, idx) => (
+          {events.map((event, idx) => (
             <motion.div
               key={event.id}
               initial={{ opacity: 0, y: 15 }}
@@ -113,7 +125,7 @@ export default function EventsClient({ initialEvents }: { initialEvents: any[] }
                   </h3>
 
                   <p className="text-sm text-slate-600 mb-6 line-clamp-2 leading-relaxed">
-                    {event.description}
+                    {extractPlainText(event.description)}
                   </p>
 
                   <div className="mt-auto space-y-3">
@@ -157,14 +169,11 @@ export default function EventsClient({ initialEvents }: { initialEvents: any[] }
           ))}
         </CardGrid>
       ) : (
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-center py-24 rounded-3xl border border-dashed border-slate-200 bg-white"
-        >
-          <p className="text-lg font-semibold text-slate-900 mb-2">No events found</p>
-          <p className="text-slate-500">Try adjusting your search or filters to find what you're looking for.</p>
-        </motion.div>
+        <EmptyState 
+          title="No events found" 
+          description="Try adjusting your search or filters to find what you're looking for." 
+          icon="search" 
+        />
       )}
     </PageLayout>
   );

@@ -8,15 +8,34 @@ export async function GET(request: NextRequest) {
   try {
     await connectDB();
     
-    // Parse query params (e.g., ?limit=3)
+    // Parse query params (e.g., ?limit=3&q=tech&categories=Technical,Workshop)
     const { searchParams } = new URL(request.url);
     const limitParam = searchParams.get("limit");
+    const q = searchParams.get("q");
+    const categories = searchParams.get("categories");
+    
     const limit = limitParam ? parseInt(limitParam, 10) : 10;
     
-    let query = Event.find({}).sort({ date: 1 });
+    const filter: any = {};
+    if (q) {
+      filter.$or = [
+        { title: { $regex: q, $options: 'i' } },
+        { venue: { $regex: q, $options: 'i' } }
+      ];
+    }
     
-    if (limit > 0) {
+    if (categories) {
+      // Split by comma, case insensitive regex for each category
+      const catArray = categories.split(',').map(c => new RegExp(c.trim(), 'i'));
+      filter.category = { $in: catArray };
+    }
+
+    let query = Event.find(filter).sort({ date: 1 });
+    
+    if (limit > 0 && limit < 100) {
       query = query.limit(limit);
+    } else {
+      query = query.limit(100); // max 100
     }
     
     const events = await query.lean();

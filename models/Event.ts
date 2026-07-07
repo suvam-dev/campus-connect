@@ -10,6 +10,9 @@ const EventSchema = new mongoose.Schema(
     tags: [{ type: String }],
     image: { type: String },
     description: { type: String },
+    status: { type: String, enum: ['draft', 'published', 'cancelled'], default: 'published' },
+    capacity: { type: Number, default: 0 }, // 0 means unlimited
+    registrationDeadline: { type: Date },
   },
   { timestamps: true }
 );

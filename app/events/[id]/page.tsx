@@ -1,6 +1,7 @@
 import React from 'react';
 import { notFound } from 'next/navigation';
 import EventDetailClient from './EventDetailClient';
+import { checkRegistrationStatus } from '@/app/actions/registrationActions';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -24,5 +25,7 @@ export default async function EventDetailPage(props: PageProps) {
     return notFound();
   }
 
-  return <EventDetailClient event={event} />;
+  const { isRegistered, registrationId } = await checkRegistrationStatus(params.id);
+
+  return <EventDetailClient event={event} isRegisteredInitial={isRegistered} registrationIdInitial={registrationId} />;
 }

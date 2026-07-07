@@ -1,0 +1,41 @@
+import React from 'react';
+import { connectDB } from '@/lib/mongodb';
+import Society from '@/models/Society';
+import { DataTable } from '@/components/admin/DataTable';
+import { columns, SocietyRow } from './columns';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
+import Link from 'next/link';
+
+export default async function SocietiesPage() {
+  await connectDB();
+  
+  const societies = await Society.find({}).sort({ createdAt: -1 }).lean();
+  
+  const formattedSocieties: SocietyRow[] = societies.map((s: any) => ({
+    _id: s._id.toString(),
+    name: s.name,
+    slug: s.slug,
+    membersCount: s.members ? s.members.length : 0,
+    adminsCount: s.admins ? s.admins.length : 0,
+    createdAt: s.createdAt ? s.createdAt.toISOString() : new Date().toISOString(),
+  }));
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Societies</h1>
+          <p className="text-muted-foreground">Manage all societies on the platform.</p>
+        </div>
+        <Button asChild>
+          <Link href="/super-admin/societies/new">
+            <Plus className="mr-2 h-4 w-4" /> Create Society
+          </Link>
+        </Button>
+      </div>
+
+      <DataTable columns={columns} data={formattedSocieties} searchKey="name" />
+    </div>
+  );
+}

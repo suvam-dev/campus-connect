@@ -16,6 +16,8 @@ interface FilterBarProps {
   onFilterChange?: (selected: string[]) => void;
   placeholder?: string;
   className?: string;
+  initialSearch?: string;
+  initialFilters?: string[];
 }
 
 export function FilterBar({
@@ -23,10 +25,12 @@ export function FilterBar({
   filters = [],
   onFilterChange,
   placeholder = 'Search...',
-  className = ''
+  className = '',
+  initialSearch = '',
+  initialFilters = []
 }: FilterBarProps) {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState(initialSearch);
+  const [selectedFilters, setSelectedFilters] = useState<string[]>(initialFilters);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
