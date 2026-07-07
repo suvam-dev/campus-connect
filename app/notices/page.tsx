@@ -1,140 +1,245 @@
-import type { Metadata } from "next";
+"use client";
 
-import { SiteShell } from "@/components/site-shell";
+import React, { useState } from 'react';
+import { PageLayout } from '@/components/layouts';
+import { PageHeader, FilterBar, ListLayout } from '@/components/shared';
+import { AlertCircle, FileText, Briefcase, Settings, BookOpen, ChevronRight, Filter } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { motion, AnimatePresence } from 'framer-motion';
 
-export const metadata: Metadata = {
-  title: "Notices | Campus Connect",
-  description: "Latest academic, placement, general, and administrative notices.",
-};
-
-const filters = ["All Notices", "Academic", "Placement", "General", "Administrative"];
-
-const notices = [
+const NOTICES = [
   {
-    tag: "Academic",
-    date: "July 6, 2026 • 10:30 AM",
-    title: "Revised mid-semester examination schedule released for Autumn 2026-27",
-    description:
-      "Venue changes affect core engineering papers and select common electives. Students should re-check exam cells before hall reporting.",
+    id: 1,
+    title: "Revised Mid-Semester Examination Schedule Autumn 2024-25",
+    category: "Academic",
+    date: "Today, 10:30 AM",
+    description: "Please find attached the revised schedule for the upcoming mid-semester examinations. Pay close attention to the venue changes for core engineering subjects.",
     source: "Academic Section",
-    accent: "bg-[#c8951b]",
+    isUnread: true,
+    icon: AlertCircle
   },
   {
-    tag: "Placement",
-    date: "July 5, 2026 • 4:15 PM",
-    title: "Registration open for Phase 1 pre-placement talks",
-    description:
-      "Eligible students must confirm attendance on the ERP portal before slot allocation closes. Company-specific sessions will be locked after submission.",
+    id: 2,
+    title: "Registration Open: Pre-Placement Talks (Phase 1)",
+    category: "Placement",
+    date: "Yesterday, 04:15 PM",
+    description: "Students eligible for Phase 1 placements must register for the upcoming Pre-Placement Talks on the ERP portal. Attendance is mandatory for registered companies.",
     source: "Career Development Centre",
-    accent: "bg-[#123e74]",
+    isUnread: false,
+    icon: Briefcase
   },
   {
-    tag: "Administrative",
-    date: "July 4, 2026",
-    title: "Campus water supply maintenance announced for Saturday blocks",
-    description:
-      "Low pressure is expected near halls of residence and the old academic zone while the central purification line undergoes maintenance.",
+    id: 3,
+    title: "Campus Water Supply Maintenance Schedule",
+    category: "Administrative",
+    date: "Oct 24, 2024",
+    description: "Scheduled maintenance of the central water purification plant will occur this weekend. Expect low pressure in specific halls of residence from 10 AM to 4 PM.",
     source: "Estate Office",
-    accent: "bg-[#39536a]",
+    isUnread: false,
+    icon: Settings
   },
   {
-    tag: "General",
-    date: "July 2, 2026",
-    title: "Call for papers opened for the annual campus technology symposium",
-    description:
-      "Research abstracts, demos, and student-led project submissions are invited across computing, energy, materials, and design systems.",
+    id: 4,
+    title: "Call for Papers: Annual Tech Symposium",
+    category: "General",
+    date: "Oct 22, 2024",
+    description: "The organizing committee invites research papers and project demonstrations for the upcoming Tech Symposium. Early bird submission deadline is approaching.",
     source: "Technology Students' Gymkhana",
-    accent: "bg-[#6b5612]",
+    isUnread: false,
+    icon: BookOpen
   },
 ];
 
+const CATEGORIES = [
+  { id: 'all', label: 'All Notices' },
+  { id: 'academic', label: 'Academic' },
+  { id: 'placement', label: 'Placement' },
+  { id: 'general', label: 'General' },
+  { id: 'administrative', label: 'Administrative' },
+];
+
+const CATEGORY_COLORS: Record<string, string> = {
+  'Academic': 'bg-blue-100 text-blue-700',
+  'Placement': 'bg-purple-100 text-purple-700',
+  'Administrative': 'bg-orange-100 text-orange-700',
+  'General': 'bg-emerald-100 text-emerald-700'
+};
+
 export default function NoticesPage() {
+  const [filteredNotices, setFilteredNotices] = useState(NOTICES);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeCategory, setActiveCategory] = useState<string>('all');
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    applyFilters(query, activeCategory);
+  };
+
+  const handleCategorySelect = (categoryId: string) => {
+    setActiveCategory(categoryId);
+    applyFilters(searchQuery, categoryId);
+  };
+
+  const applyFilters = (query: string, category: string) => {
+    let result = NOTICES;
+    
+    if (category !== 'all') {
+      result = result.filter(n => n.category.toLowerCase() === category);
+    }
+    
+    if (query) {
+      result = result.filter(n => 
+        n.title.toLowerCase().includes(query.toLowerCase()) ||
+        n.description.toLowerCase().includes(query.toLowerCase())
+      );
+    }
+    
+    setFilteredNotices(result);
+  };
+
   return (
-    <SiteShell active="notices">
-      <section className="mx-auto max-w-7xl px-4 pb-10 pt-12 sm:px-6 lg:px-10">
-        <p className="section-kicker">Notice Board</p>
-        <h1 className="mt-3 font-serif text-4xl text-[color:var(--primary)] sm:text-5xl">
-          Academic and administrative updates without the inbox chaos.
-        </h1>
-        <p className="mt-5 max-w-3xl text-base leading-8 text-[color:var(--muted)]">
-          Track urgent circulars, placement communication, and campus-wide operational changes
-          from one filtered stream.
-        </p>
-      </section>
+    <PageLayout>
+      <PageHeader
+        title="Notice Board"
+        description="Stay updated with the latest academic and administrative announcements"
+      />
 
-      <section className="mx-auto grid max-w-7xl gap-8 px-4 pb-20 sm:px-6 lg:grid-cols-[0.32fr_0.68fr] lg:px-10">
-        <aside className="surface-card h-fit p-7">
-          <input
-            type="text"
-            placeholder="Search notices..."
-            className="w-full rounded-full border border-[color:var(--outline-variant)] bg-white/80 px-5 py-3 text-sm text-[color:var(--foreground)] outline-none transition placeholder:text-[color:var(--muted)] focus:border-[color:var(--primary)] dark:bg-white/6"
-          />
-          <div className="mt-7">
-            <p className="section-kicker">Categories</p>
-            <div className="mt-4 grid gap-2">
-              {filters.map((filter, index) => (
-                <label
-                  key={filter}
-                  className="flex items-center gap-3 rounded-2xl px-3 py-3 text-sm text-[color:var(--foreground)] transition hover:bg-white/70 dark:hover:bg-white/6"
-                >
-                  <span
-                    className={`h-3 w-3 rounded-full border border-[color:var(--outline-variant)] ${
-                      index === 0 ? "bg-[color:var(--primary)]" : "bg-transparent"
-                    }`}
-                  />
-                  {filter}
-                </label>
-              ))}
-            </div>
-          </div>
-          <div className="mt-7">
-            <p className="section-kicker">Sort By</p>
-            <div className="mt-4 rounded-2xl border border-[color:var(--outline-variant)] bg-white/80 px-4 py-3 text-sm text-[color:var(--foreground)] dark:bg-white/6">
-              Newest First
-            </div>
-          </div>
-        </aside>
-
-        <div className="grid gap-4">
-          {notices.map((notice) => (
-            <article
-              key={notice.title}
-              className="surface-card relative overflow-hidden p-6 sm:p-7"
-            >
-              <div className={`absolute inset-y-0 left-0 w-1 ${notice.accent}`} />
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                <div className="flex items-center gap-3">
-                  <span className="rounded-full bg-[color:var(--secondary-soft)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[color:var(--secondary-deep)]">
-                    {notice.tag}
-                  </span>
-                  {notice.tag === "Academic" ? (
-                    <span className="h-2.5 w-2.5 rounded-full bg-[#bf2d2d]" />
-                  ) : null}
+      <ListLayout
+        sidebar={
+          <div className="space-y-6">
+            <Card className="border-slate-200 shadow-sm rounded-2xl">
+              <CardContent className="p-5">
+                <div className="flex items-center gap-2 mb-4">
+                  <Filter className="w-4 h-4 text-slate-500" />
+                  <h3 className="font-semibold text-slate-900">Categories</h3>
                 </div>
-                <p className="text-xs uppercase tracking-[0.18em] text-[color:var(--muted)]">
-                  {notice.date}
-                </p>
-              </div>
-              <h2 className="mt-4 text-2xl font-semibold leading-9 text-[color:var(--primary)]">
-                {notice.title}
-              </h2>
-              <p className="mt-3 max-w-3xl text-sm leading-7 text-[color:var(--muted)]">
-                {notice.description}
-              </p>
-              <div className="mt-5 flex flex-col gap-3 border-t border-[color:var(--outline-variant)]/70 pt-5 sm:flex-row sm:items-center sm:justify-between">
-                <p className="text-sm text-[color:var(--muted)]">{notice.source}</p>
-                <button className="text-left text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--secondary)]">
-                  Read More
-                </button>
-              </div>
-            </article>
-          ))}
+                <div className="space-y-1">
+                  {CATEGORIES.map(cat => {
+                    const isActive = activeCategory === cat.id;
+                    return (
+                      <button
+                        key={cat.id}
+                        onClick={() => handleCategorySelect(cat.id)}
+                        className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm transition-all duration-200 ${
+                          isActive 
+                            ? 'bg-slate-900 text-white font-medium shadow-md shadow-slate-900/10' 
+                            : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                        }`}
+                      >
+                        <span>{cat.label}</span>
+                        {isActive && <ChevronRight className="w-4 h-4 opacity-70" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
 
-          <button className="mx-auto mt-4 rounded-full border border-[color:var(--outline-variant)] bg-white/80 px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--primary)] dark:bg-white/6">
-            Load More Notices
-          </button>
+            <Card className="border-slate-200 shadow-sm rounded-2xl">
+              <CardContent className="p-5">
+                <h3 className="font-semibold text-slate-900 mb-4">Sort By</h3>
+                <select className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all cursor-pointer">
+                  <option>Newest First</option>
+                  <option>Oldest First</option>
+                  <option>Unread First</option>
+                </select>
+              </CardContent>
+            </Card>
+          </div>
+        }
+      >
+        <div className="space-y-6">
+          <div className="mb-8">
+            <FilterBar
+              placeholder="Search notices by keyword..."
+              onSearch={handleSearch}
+            />
+          </div>
+
+          <div className="space-y-4">
+            <AnimatePresence>
+              {filteredNotices.length > 0 ? (
+                filteredNotices.map((notice, idx) => (
+                  <motion.div
+                    key={notice.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ delay: idx * 0.05, duration: 0.3 }}
+                  >
+                    <Card className={`group relative overflow-hidden transition-all duration-300 rounded-2xl border-slate-200 hover:border-slate-300 hover:shadow-md cursor-pointer bg-white ${notice.isUnread ? 'ring-1 ring-indigo-100' : ''}`}>
+                      {notice.isUnread && (
+                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-indigo-500 rounded-l-2xl" />
+                      )}
+                      <CardContent className="p-6">
+                        <div className="flex gap-5">
+                          <div className={`flex-shrink-0 p-3.5 rounded-2xl transition-colors ${CATEGORY_COLORS[notice.category] || 'bg-slate-100 text-slate-600'}`}>
+                            <notice.icon className="w-6 h-6" />
+                          </div>
+
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-4 mb-2">
+                              <div>
+                                <div className="flex items-center gap-3 mb-1">
+                                  <h3 className="font-bold text-lg text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-2">
+                                    {notice.title}
+                                  </h3>
+                                  {notice.isUnread && (
+                                    <span className="shrink-0 flex h-2 w-2 rounded-full bg-indigo-500" />
+                                  )}
+                                </div>
+                                <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+                                  {notice.source}
+                                </p>
+                              </div>
+                              <div className="flex-shrink-0 pt-1">
+                                <Badge variant="secondary" className={`border-none font-semibold ${CATEGORY_COLORS[notice.category] || 'bg-slate-100 text-slate-700'}`}>
+                                  {notice.category}
+                                </Badge>
+                              </div>
+                            </div>
+
+                            <p className="text-slate-600 line-clamp-2 mb-4 leading-relaxed mt-3">
+                              {notice.description}
+                            </p>
+
+                            <div className="flex items-center justify-between mt-2 pt-4 border-t border-slate-100">
+                              <span className="text-sm font-medium text-slate-400">{notice.date}</span>
+                              <Button variant="ghost" className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 -mr-4 rounded-xl font-semibold">
+                                Read Full Notice <ChevronRight className="w-4 h-4 ml-1" />
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))
+              ) : (
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-center py-20 rounded-3xl border border-dashed border-slate-200 bg-white"
+                >
+                  <FileText className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+                  <p className="text-lg font-semibold text-slate-900 mb-1">No notices found</p>
+                  <p className="text-sm text-slate-500">Try adjusting your search or category filters.</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {filteredNotices.length > 0 && (
+            <div className="flex justify-center mt-10 pt-4">
+              <Button variant="outline" className="rounded-full px-8 border-slate-300 hover:bg-slate-50 font-semibold shadow-sm">
+                Load More Announcements
+              </Button>
+            </div>
+          )}
         </div>
-      </section>
-    </SiteShell>
+      </ListLayout>
+    </PageLayout>
   );
 }

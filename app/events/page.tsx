@@ -1,161 +1,192 @@
-import type { Metadata } from "next";
+"use client";
 
-import { SiteShell } from "@/components/site-shell";
+import React, { useState } from 'react';
+import { PageLayout } from '@/components/layouts';
+import { PageHeader, FilterBar, CardGrid } from '@/components/shared';
+import { Calendar, MapPin, Bookmark } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { motion } from 'framer-motion';
 
-export const metadata: Metadata = {
-  title: "Events | Campus Connect",
-  description: "Browse academic, technical, and cultural events at IIT Kharagpur.",
+const EVENTS = [
+  {
+    id: 1,
+    title: "Advanced Autonomous Robotics Symposium",
+    venue: "Kalpana Chawla Space Technology Cell, RM 204",
+    date: "Oct 24, 2024",
+    time: "10:00 AM - 4:00 PM",
+    category: "Technical",
+    image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&auto=format&fit=crop",
+    description: "Learn about cutting-edge robotics technology and innovations"
+  },
+  {
+    id: 2,
+    title: "Spring Fest: Inter-College Classical Arts Showcase",
+    venue: "Tagore Open Air Theatre (TOAT)",
+    date: "Oct 28, 2024",
+    time: "6:00 PM Onwards",
+    category: "Cultural",
+    image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&auto=format&fit=crop",
+    description: "Experience traditional and contemporary art performances"
+  },
+  {
+    id: 3,
+    title: "Future of Quantum Computing in Cryptography",
+    venue: "Raman Auditorium, Main Building",
+    date: "Nov 2, 2024",
+    time: "2:00 PM",
+    category: "Guest Lecture",
+    image: "https://images.unsplash.com/photo-1535976066051-41be0c4bdd72?w=800&auto=format&fit=crop",
+    description: "Expert insights on quantum computing and cybersecurity"
+  },
+  {
+    id: 4,
+    title: "Design Thinking for Hardware Startups",
+    venue: "Rajendra Prasad Hall of Residence",
+    date: "Nov 5, 2024",
+    time: "2:00 PM - 5:00 PM",
+    category: "Workshop",
+    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&auto=format&fit=crop",
+    description: "Learn how to design products for hardware startups"
+  },
+];
+
+const FILTER_OPTIONS = [
+  { id: 'all', label: 'All Events' },
+  { id: 'technical', label: 'Technical' },
+  { id: 'cultural', label: 'Cultural' },
+  { id: 'workshop', label: 'Workshop' },
+  { id: 'lecture', label: 'Guest Lecture' },
+];
+
+const CATEGORY_COLORS: Record<string, string> = {
+  'Technical': 'bg-blue-100 text-blue-700 hover:bg-blue-200',
+  'Cultural': 'bg-purple-100 text-purple-700 hover:bg-purple-200',
+  'Workshop': 'bg-orange-100 text-orange-700 hover:bg-orange-200',
+  'Guest Lecture': 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
 };
 
-const categories = [
-  "All Events",
-  "Academic and Research",
-  "Technical Symposia",
-  "Cultural Fests",
-  "Sports Tournaments",
-  "Guest Lectures",
-];
-
-const events = [
-  {
-    month: "Jul",
-    day: "12",
-    tag: "Technical",
-    title: "Advanced Autonomous Robotics Symposium",
-    place: "Kalpana Chawla Space Technology Cell, Room 204",
-    meta: "10:00 AM to 4:00 PM",
-    tone: "from-[#102847] to-[#285a87]",
-  },
-  {
-    month: "Jul",
-    day: "18",
-    tag: "Cultural",
-    title: "Monsoon Classics at Spring Fest Prelims",
-    place: "Tagore Open Air Theatre",
-    meta: "6:00 PM onwards",
-    tone: "from-[#81540a] to-[#c89a34]",
-  },
-  {
-    month: "Jul",
-    day: "24",
-    tag: "Guest Lecture",
-    title: "Quantum Computing and Applied Cryptography",
-    place: "Raman Auditorium, Main Building",
-    meta: "Hosted by CSE Department",
-    tone: "from-[#203343] to-[#467083]",
-  },
-  {
-    month: "Jul",
-    day: "27",
-    tag: "Workshop",
-    title: "Design Thinking for Hardware Startups",
-    place: "Rajendra Prasad Hall Seminar Room",
-    meta: "2:00 PM to 5:00 PM",
-    tone: "from-[#38465a] to-[#596b85]",
-  },
-  {
-    month: "Aug",
-    day: "02",
-    tag: "Research",
-    title: "Energy Systems Poster Forum",
-    place: "Vikramshila Atrium",
-    meta: "Student and faculty showcase",
-    tone: "from-[#203e34] to-[#4b7a61]",
-  },
-  {
-    month: "Aug",
-    day: "05",
-    tag: "Community",
-    title: "Open Campus Collaboration Fair",
-    place: "Technology Students' Gymkhana Lawns",
-    meta: "Cross-club recruiting and demos",
-    tone: "from-[#4e2c57] to-[#7b4f88]",
-  },
-];
-
 export default function EventsPage() {
+  const [filteredEvents, setFilteredEvents] = useState(EVENTS);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    const filtered = EVENTS.filter(event =>
+      event.title.toLowerCase().includes(query.toLowerCase()) ||
+      event.venue.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredEvents(filtered);
+  };
+
+  const handleFilterChange = (filters: string[]) => {
+    if (filters.length === 0 || filters.includes('all')) {
+      setFilteredEvents(EVENTS);
+    } else {
+      const filtered = EVENTS.filter(event =>
+        filters.some(f => event.category.toLowerCase().includes(f))
+      );
+      setFilteredEvents(filtered);
+    }
+  };
+
   return (
-    <SiteShell active="events">
-      <section className="mx-auto max-w-7xl px-4 pb-10 pt-12 sm:px-6 lg:px-10">
-        <p className="section-kicker">Discover Events</p>
-        <h1 className="mt-3 font-serif text-4xl text-[color:var(--primary)] sm:text-5xl">
-          Technical symposia, cultural nights, workshops, and talks.
-        </h1>
-        <div className="surface-card mt-8 flex flex-col gap-4 p-4 sm:flex-row sm:items-center">
-          <input
-            type="text"
-            placeholder="Search for symposia, fests, workshops, lectures..."
-            className="w-full rounded-full border border-[color:var(--outline-variant)] bg-white/80 px-5 py-3 text-sm text-[color:var(--foreground)] outline-none transition placeholder:text-[color:var(--muted)] focus:border-[color:var(--primary)] dark:bg-white/6"
-          />
-          <button className="rounded-full bg-[color:var(--primary)] px-5 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-white">
-            Filter
-          </button>
-        </div>
-        <div className="mt-5 flex flex-wrap gap-3">
-          {["All", "This Week", "Workshops", "Technical", "Cultural"].map((chip, index) => (
-            <button
-              key={chip}
-              className={
-                index === 0
-                  ? "rounded-full bg-[color:var(--primary)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-white"
-                  : "rounded-full border border-[color:var(--outline-variant)] bg-white/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--foreground)] dark:bg-white/6"
-              }
-            >
-              {chip}
-            </button>
-          ))}
-        </div>
-      </section>
+    <PageLayout>
+      <PageHeader
+        title="Discover Events"
+        description="Find and register for upcoming campus events"
+      />
 
-      <section className="mx-auto grid max-w-7xl gap-8 px-4 pb-20 sm:px-6 lg:grid-cols-[0.34fr_0.66fr] lg:px-10">
-        <aside className="surface-card h-fit p-7">
-          <h2 className="section-title">Categories</h2>
-          <div className="mt-6 grid gap-2">
-            {categories.map((category, index) => (
-              <button
-                key={category}
-                className={
-                  index === 0
-                    ? "rounded-2xl bg-[color:var(--secondary-soft)] px-4 py-3 text-left text-sm font-semibold text-[color:var(--primary)]"
-                    : "rounded-2xl px-4 py-3 text-left text-sm text-[color:var(--muted)] transition hover:bg-white/70 hover:text-[color:var(--primary)] dark:hover:bg-white/6"
-                }
-              >
-                {category}
-              </button>
-            ))}
-          </div>
-        </aside>
+      <div className="mb-8">
+        <FilterBar
+          placeholder="Search events by name or venue..."
+          filters={FILTER_OPTIONS}
+          onSearch={handleSearch}
+          onFilterChange={handleFilterChange}
+        />
+      </div>
 
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {events.map((event) => (
-            <article
-              key={event.title}
-              className="overflow-hidden rounded-[1.75rem] border border-[color:var(--outline-variant)]/70 bg-white/76 shadow-[0_18px_40px_rgba(17,36,68,0.08)] transition hover:-translate-y-1 hover:shadow-[0_24px_48px_rgba(17,36,68,0.14)] dark:bg-white/6"
+      <div className="mb-6 flex items-center justify-between">
+        <p className="text-sm font-medium text-slate-500">
+          Showing {filteredEvents.length} event{filteredEvents.length !== 1 ? 's' : ''}
+        </p>
+      </div>
+
+      {filteredEvents.length > 0 ? (
+        <CardGrid cols="3" gap="lg">
+          {filteredEvents.map((event, idx) => (
+            <motion.div
+              key={event.id}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.05, duration: 0.4 }}
+              className="h-full"
             >
-              <div className={`h-48 bg-gradient-to-br ${event.tone} p-5 text-white`}>
-                <div className="flex h-full items-start justify-between">
-                  <div className="rounded-2xl bg-white/14 px-3 py-2 text-center backdrop-blur">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.22em]">{event.month}</p>
-                    <p className="mt-1 font-serif text-3xl">{event.day}</p>
+              <Card className="group h-full flex flex-col overflow-hidden border-slate-200 hover:border-slate-300 hover:shadow-md transition-all duration-300 rounded-2xl bg-white">
+                <div className="relative h-48 overflow-hidden bg-slate-100 shrink-0">
+                  <img
+                    src={event.image}
+                    alt={event.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-slate-900/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300" />
+                  
+                  {/* Category Badge */}
+                  <div className="absolute top-4 left-4">
+                    <Badge variant="secondary" className={`border-none font-semibold ${CATEGORY_COLORS[event.category] || 'bg-slate-100 text-slate-700'}`}>
+                      {event.category}
+                    </Badge>
                   </div>
-                  <span className="rounded-full bg-white/14 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em]">
-                    {event.tag}
-                  </span>
+
+                  {/* Bookmark */}
+                  <button className="absolute top-4 right-4 p-2.5 rounded-full bg-white/90 hover:bg-white text-slate-600 hover:text-indigo-600 transition-colors shadow-sm backdrop-blur-sm">
+                    <Bookmark className="w-4 h-4" />
+                  </button>
                 </div>
-              </div>
-              <div className="p-5">
-                <h3 className="text-lg font-semibold leading-7 text-[color:var(--foreground)]">
-                  {event.title}
-                </h3>
-                <p className="mt-3 text-sm leading-6 text-[color:var(--muted)]">{event.place}</p>
-                <p className="mt-2 text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--secondary)]">
-                  {event.meta}
-                </p>
-              </div>
-            </article>
+
+                <CardContent className="p-6 flex flex-col flex-grow">
+                  <h3 className="font-bold text-xl text-slate-900 line-clamp-2 mb-3 leading-tight tracking-tight group-hover:text-indigo-600 transition-colors">
+                    {event.title}
+                  </h3>
+
+                  <p className="text-sm text-slate-600 mb-6 line-clamp-2 leading-relaxed">
+                    {event.description}
+                  </p>
+
+                  <div className="mt-auto space-y-3">
+                    <div className="flex items-start gap-3 text-sm text-slate-600">
+                      <div className="mt-0.5 p-1.5 rounded-md bg-slate-50 border border-slate-100 text-slate-400">
+                        <MapPin className="w-3.5 h-3.5" />
+                      </div>
+                      <span className="line-clamp-2 font-medium leading-snug pt-1">{event.venue}</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-sm text-slate-600">
+                      <div className="p-1.5 rounded-md bg-slate-50 border border-slate-100 text-slate-400">
+                        <Calendar className="w-3.5 h-3.5" />
+                      </div>
+                      <span className="font-medium">{event.date} • {event.time}</span>
+                    </div>
+                  </div>
+
+                  <Button className="mt-6 w-full shadow-sm font-semibold rounded-xl">
+                    Learn More
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
           ))}
-        </div>
-      </section>
-    </SiteShell>
+        </CardGrid>
+      ) : (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-center py-24 rounded-3xl border border-dashed border-slate-200 bg-white"
+        >
+          <p className="text-lg font-semibold text-slate-900 mb-2">No events found</p>
+          <p className="text-slate-500">Try adjusting your search or filters to find what you're looking for.</p>
+        </motion.div>
+      )}
+    </PageLayout>
   );
 }

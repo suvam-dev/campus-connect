@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Home - Campus Connect | IIT Kharagpur</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-on-surface": "#eff1f3",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-container": "#8c9cb5",
+                        "surface-variant": "#e0e3e5",
+                        "tertiary": "#0e1f32",
+                        "on-error-container": "#93000a",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#e6e8ea",
+                        "on-primary-fixed": "#001b3c",
+                        "surface-dim": "#d8dadc",
+                        "on-secondary-fixed": "#271900",
+                        "on-background": "#191c1e",
+                        "surface-container-highest": "#e0e3e5",
+                        "surface": "#f7f9fb",
+                        "outline": "#737780",
+                        "primary-container": "#003366",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed": "#d3e4fe",
+                        "on-primary-container": "#799dd6",
+                        "surface-container": "#eceef0",
+                        "secondary-fixed-dim": "#ffba20",
+                        "on-tertiary-fixed": "#0b1c30",
+                        "on-tertiary-fixed-variant": "#38485d",
+                        "secondary-fixed": "#ffdea8",
+                        "outline-variant": "#c3c6d1",
+                        "primary-fixed-dim": "#a7c8ff",
+                        "on-primary-fixed-variant": "#1f477b",
+                        "primary-fixed": "#d5e3ff",
+                        "on-error": "#ffffff",
+                        "inverse-primary": "#a7c8ff",
+                        "on-primary": "#ffffff",
+                        "primary": "#001e40",
+                        "surface-bright": "#f7f9fb",
+                        "on-secondary-container": "#6b4b00",
+                        "background": "#f7f9fb",
+                        "inverse-surface": "#2d3133",
+                        "secondary-container": "#feb700",
+                        "on-surface-variant": "#43474f",
+                        "error": "#ba1a1a",
+                        "surface-tint": "#3a5f94",
+                        "secondary": "#7c5800",
+                        "surface-container-low": "#f2f4f6",
+                        "tertiary-fixed-dim": "#b7c8e1",
+                        "on-secondary-fixed-variant": "#5e4200",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-container": "#243448",
+                        "on-surface": "#191c1e"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "margin-desktop": "40px",
+                        "gutter": "24px",
+                        "unit": "8px",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "display": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "label-md": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-sm": ["20px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "display": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        .float-shadow {
+            box-shadow: 0 20px 40px -10px rgba(0, 30, 64, 0.08);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col pt-20">
+<!-- Top Navigation (Shared Component) -->
+<header class="bg-surface/70 dark:bg-surface-container-lowest/70 backdrop-blur-xl border-b border-outline-variant/30 shadow-sm fixed top-0 w-full z-50">
+<div class="max-w-container-max mx-auto px-margin-desktop flex justify-between items-center h-20">
+<!-- Brand -->
+<div class="flex items-center gap-2">
+<span class="font-display text-headline-sm font-bold text-primary dark:text-primary-fixed">IIT Kharagpur</span>
+</div>
+<!-- Links (Desktop) -->
+<nav class="hidden md:flex gap-6">
+<a class="text-primary dark:text-primary-fixed font-bold border-b-2 border-primary dark:border-primary-fixed pb-1 font-body-md text-body-md scale-95 active:opacity-80 transition-transform" href="#">Home</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors hover:bg-surface-container-high/50 dark:hover:bg-surface-container-highest/50 transition-all duration-300 font-body-md text-body-md rounded px-2 py-1 scale-95 active:opacity-80 transition-transform" href="#">Events</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors hover:bg-surface-container-high/50 dark:hover:bg-surface-container-highest/50 transition-all duration-300 font-body-md text-body-md rounded px-2 py-1 scale-95 active:opacity-80 transition-transform" href="#">Notices</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors hover:bg-surface-container-high/50 dark:hover:bg-surface-container-highest/50 transition-all duration-300 font-body-md text-body-md rounded px-2 py-1 scale-95 active:opacity-80 transition-transform" href="#">Bookmarks</a>
+</nav>
+<!-- Actions -->
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-primary scale-95 active:opacity-80 transition-transform">
+<span class="material-symbols-outlined">search</span>
+</button>
+<a class="hidden md:inline-block font-label-md text-label-md text-primary bg-primary-fixed/20 hover:bg-primary-fixed/30 px-4 py-2 rounded-full transition-colors" href="#">Login</a>
+<button class="text-on-surface-variant hover:text-primary scale-95 active:opacity-80 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<main class="flex-grow">
+<!-- Hero Section -->
+<section class="relative w-full h-[614px] min-h-[500px] flex items-center">
+<div class="absolute inset-0 z-0">
+<div class="w-full h-full bg-cover bg-center" data-alt="A majestic, high-resolution photograph of the main academic building of a prestigious university, captured during golden hour. The architecture is grand and historic, bathed in soft, warm sunlight against a clear blue sky. The composition conveys a sense of academic excellence and tradition. The lighting is pristine, emphasizing the clean lines and scale of the structure." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCOAyssGvkMM5F3dtkcBo0vtlnItpC12HRXtZkHcALuOlsCiYuvk3ETc_5OqGCExOYbDPr8DL7lZr-BuJgXLLCLPIk2cgcUqERyTHPPoXMQAHyFr5NOj1n_wNLBdNVWbqRtXZ30VF1QPL6wPCGhWRdh01rZ9PochhqaAgGA6pqqhJqj0pOLpNruWmR46WPNkEbekQCbyKtuloSzDl8x3eMFMN7Uw8Qjoi_zSr7zgK-2q-7jYDtvpSb3')"></div>
+<div class="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent"></div>
+</div>
+<div class="max-w-container-max mx-auto px-margin-desktop relative z-10 w-full grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div class="flex flex-col justify-center gap-6">
+<div>
+<h1 class="font-display text-display text-primary mb-2 hidden md:block">Welcome to Campus Connect, IIT Kharagpur</h1>
+<h1 class="font-display text-headline-lg-mobile text-primary mb-2 md:hidden">Welcome to Campus Connect, IIT Kharagpur</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-md">Your central hub for academic resources, campus events, and vital institutional notices.</p>
+</div>
+<div class="flex gap-4">
+<a class="bg-primary text-on-primary font-label-md text-label-md px-6 py-3 rounded-full hover:bg-primary/90 transition-colors shadow-sm" href="#">Explore Portal</a>
+</div>
+</div>
+<!-- Featured Event Card (Bento Style) -->
+<div class="hidden md:flex flex-col justify-center items-end">
+<div class="glass-card rounded-xl p-6 float-shadow w-full max-w-md border-t-2 border-t-secondary-container">
+<div class="flex justify-between items-center mb-4">
+<span class="font-label-md text-label-md text-secondary tracking-widest uppercase">Featured Event</span>
+<span class="bg-secondary-container/20 text-on-secondary-container font-label-md text-label-md px-2 py-1 rounded">Today</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Annual Tech Symposium 2024</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">Join leading researchers and industry experts for a three-day exhibition of technological innovation and academic excellence.</p>
+<a class="inline-flex items-center gap-2 font-label-md text-label-md text-primary hover:text-primary-fixed-variant transition-colors" href="#">
+                            View Schedule <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<div class="max-w-container-max mx-auto px-margin-desktop py-12 grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Left Column: Notices & Quick Links -->
+<div class="lg:col-span-4 flex flex-col gap-gutter">
+<!-- Quick Links -->
+<section class="glass-card rounded-xl p-6 float-shadow">
+<h2 class="font-headline-sm text-headline-sm text-primary mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined">bolt</span> Quick Links
+                    </h2>
+<div class="flex flex-col gap-2">
+<a class="group flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-high transition-colors" href="#">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined">school</span>
+</div>
+<span class="font-body-md text-body-md font-semibold text-on-surface">Student Portal</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors">chevron_right</span>
+</a>
+<a class="group flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-high transition-colors" href="#">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined">manage_accounts</span>
+</div>
+<span class="font-body-md text-body-md font-semibold text-on-surface">ERP System</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors">chevron_right</span>
+</a>
+<a class="group flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-high transition-colors" href="#">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined">local_library</span>
+</div>
+<span class="font-body-md text-body-md font-semibold text-on-surface">Central Library</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors">chevron_right</span>
+</a>
+</div>
+</section>
+<!-- Recent Notices -->
+<section class="glass-card rounded-xl p-6 float-shadow flex-grow flex flex-col">
+<div class="flex justify-between items-center mb-6">
+<h2 class="font-headline-sm text-headline-sm text-primary flex items-center gap-2">
+<span class="material-symbols-outlined">campaign</span> Notices
+                        </h2>
+<a class="font-label-md text-label-md text-secondary hover:underline" href="#">View All</a>
+</div>
+<ul class="flex flex-col gap-4 flex-grow">
+<li class="pb-4 border-b border-outline-variant/30 last:border-0 last:pb-0">
+<span class="block font-label-md text-label-md text-outline mb-1">Oct 24, 2024</span>
+<a class="font-body-md text-body-md font-semibold text-on-surface hover:text-primary transition-colors" href="#">Mid-Semester Examination Schedule Updated</a>
+</li>
+<li class="pb-4 border-b border-outline-variant/30 last:border-0 last:pb-0">
+<span class="block font-label-md text-label-md text-outline mb-1">Oct 22, 2024</span>
+<a class="font-body-md text-body-md font-semibold text-on-surface hover:text-primary transition-colors" href="#">Hostel Allocation for First Year Postgraduates</a>
+</li>
+<li class="pb-4 border-b border-outline-variant/30 last:border-0 last:pb-0">
+<span class="block font-label-md text-label-md text-outline mb-1">Oct 20, 2024</span>
+<a class="font-body-md text-body-md font-semibold text-on-surface hover:text-primary transition-colors" href="#">Library Reading Room Timings Extension</a>
+</li>
+</ul>
+</section>
+</div>
+<!-- Right Column: Events Grid -->
+<div class="lg:col-span-8 flex flex-col gap-gutter">
+<div class="flex justify-between items-end mb-2">
+<h2 class="font-headline-lg text-headline-lg text-primary hidden md:block">Upcoming Events</h2>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-primary md:hidden">Upcoming Events</h2>
+<div class="flex gap-2">
+<button class="w-8 h-8 rounded-full border border-outline-variant flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-sm">arrow_back</span></button>
+<button class="w-8 h-8 rounded-full border border-outline-variant flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-sm">arrow_forward</span></button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<!-- Event Card 1 -->
+<div class="glass-card rounded-xl overflow-hidden float-shadow group hover:shadow-lg transition-shadow duration-300">
+<div class="h-40 w-full overflow-hidden relative">
+<div class="w-full h-full bg-cover bg-center transform group-hover:scale-105 transition-transform duration-500" data-alt="A brightly lit modern auditorium filled with university students attending a guest lecture. The speaker is faintly visible on stage, illuminated by warm stage lights. The audience is engaged, some taking notes on laptops. The overall mood is academic, focused, and professional, rendered in a crisp, high-contrast light mode aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDeCAyi5CP3kMe7G_4gKmYfkGn2oqrs3s2HTzhljDNfQNTLxS3eSI5Jyb14_zIWxVJcYCpGKQ3mstVGj5gG0w09N3v5rSXyp1YKN0-Gw7SwG14DWy2gq94uMHiDXbXQ60DmKQNCuekfxLc1gHrnUgyftXgDHb-Md5urTujDMyhK5mhkZFWJsMsOU2VaeftleAXo6HB4-sIHSoFoJZfWZxN0H1C6LdNJd_wu-1kFQ6hk64WicK3Ig9XQ')"></div>
+<div class="absolute top-4 left-4 bg-surface/90 backdrop-blur rounded p-2 text-center shadow-sm">
+<span class="block font-label-md text-label-md text-primary font-bold">OCT</span>
+<span class="block font-headline-sm text-headline-sm text-on-surface leading-none">28</span>
+</div>
+</div>
+<div class="p-6">
+<span class="inline-block bg-tertiary-fixed/30 text-on-tertiary-fixed font-label-md text-label-md px-2 py-1 rounded mb-3">Guest Lecture</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-2 group-hover:text-primary transition-colors">AI in Sustainable Engineering</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span> Nalanda Classroom Complex
+                            </p>
+</div>
+</div>
+<!-- Event Card 2 -->
+<div class="glass-card rounded-xl overflow-hidden float-shadow group hover:shadow-lg transition-shadow duration-300">
+<div class="h-40 w-full overflow-hidden relative">
+<div class="w-full h-full bg-cover bg-center transform group-hover:scale-105 transition-transform duration-500" data-alt="A vibrant outdoor campus festival taking place on a sunny day. Students are gathered around various stalls and displays on a lush green lawn, with historic academic buildings in the background. The scene is energetic and colorful, bathed in natural sunlight, conveying a sense of active student life and community engagement." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCliBDGW455WDgIOBpoW84-mLN7WeiJ-BrsjbGkRclXo45TaH09cNs-HMjapob8umU0fBl5qDseruk0xq_dGQQjFnT0d5cEJZmfTNwTM1E9ZGHlf5SpnMm_o1QzQRLXcyyX9HuSYFQEL3wwmHc5eNgrIyHEC89xwUWaY6cPhiVk_3P8JoDaRsuY6TCDgGpc9991j58BzW4Jx_Uled5hrF7V4XtKkGywbZl-XTk4HSjmoUGGUUhwrA1Z')"></div>
+<div class="absolute top-4 left-4 bg-surface/90 backdrop-blur rounded p-2 text-center shadow-sm">
+<span class="block font-label-md text-label-md text-primary font-bold">NOV</span>
+<span class="block font-headline-sm text-headline-sm text-on-surface leading-none">05</span>
+</div>
+</div>
+<div class="p-6">
+<span class="inline-block bg-secondary-fixed/30 text-on-secondary-fixed font-label-md text-label-md px-2 py-1 rounded mb-3">Cultural Fest</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-2 group-hover:text-primary transition-colors">Spring Fest Prelims</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span> Tagore Open Air Theatre
+                            </p>
+</div>
+</div>
+<!-- Event Card 3 -->
+<div class="glass-card rounded-xl overflow-hidden float-shadow group hover:shadow-lg transition-shadow duration-300">
+<div class="h-40 w-full overflow-hidden relative">
+<div class="w-full h-full bg-cover bg-center transform group-hover:scale-105 transition-transform duration-500" data-alt="A clean, modern laboratory setting with students working on advanced robotics. The lighting is cool, bright, and clinical, highlighting the metallic surfaces of the equipment. The students are focused, wearing lab coats, collaborating on a complex mechanical project. The mood is high-tech, precise, and academic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAFfaGT8f_n3Vs3Lu8C-JsbEoINsRcRi8uClgLFvfQvVZ28marV8vD94ziQArJzpfpAPdgSkB1BuU9KKfiprpkwP4ZpWqicmV_c2pfvxqz7WJylJiea-Pw1I-Fn3eMBqn9-YH7xmG2oihdPhqPuD2whbGzZIuufwa5R9PFwWj7xeLK7LN64P3Ob8IQDxDmVrB69qbLUbkJK1r4uJEx0ZxWIMdKx9WRwUaQRIbnOLHkrCBVY54dm2HwB')"></div>
+<div class="absolute top-4 left-4 bg-surface/90 backdrop-blur rounded p-2 text-center shadow-sm">
+<span class="block font-label-md text-label-md text-primary font-bold">NOV</span>
+<span class="block font-headline-sm text-headline-sm text-on-surface leading-none">12</span>
+</div>
+</div>
+<div class="p-6">
+<span class="inline-block bg-primary-fixed/30 text-on-primary-fixed font-label-md text-label-md px-2 py-1 rounded mb-3">Workshop</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-2 group-hover:text-primary transition-colors">Advanced Robotics Workshop</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span> Robotics Lab, CSE Dept
+                            </p>
+</div>
+</div>
+<!-- Event Card 4 (View More) -->
+<a class="glass-card rounded-xl border-dashed border-2 border-outline-variant/50 flex flex-col items-center justify-center p-6 text-center hover:bg-surface-container-high/50 transition-colors group" href="#">
+<div class="w-16 h-16 rounded-full bg-surface-variant flex items-center justify-center text-primary mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-2xl">grid_view</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary">View All Events</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-2">Browse the full academic calendar</p>
+</a>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer (Shared Component) -->
+<footer class="bg-tertiary dark:bg-surface-container-lowest text-on-tertiary dark:text-on-surface font-body-sm text-body-sm w-full mt-auto">
+<div class="max-w-container-max mx-auto px-margin-desktop py-12 grid grid-cols-1 md:grid-cols-4 gap-gutter">
+<div class="flex flex-col gap-4">
+<span class="font-display text-headline-md text-on-tertiary dark:text-primary-fixed">IIT Kharagpur</span>
+<p class="opacity-80">Empowering excellence in education and research since 1951.</p>
+</div>
+<div class="flex flex-col gap-3">
+<a class="text-on-tertiary/80 dark:text-on-surface/80 hover:text-on-tertiary hover:underline transition-all opacity-90 hover:opacity-100" href="#">Campus Life</a>
+<a class="text-on-tertiary/80 dark:text-on-surface/80 hover:text-on-tertiary hover:underline transition-all opacity-90 hover:opacity-100" href="#">Research</a>
+<a class="text-on-tertiary/80 dark:text-on-surface/80 hover:text-on-tertiary hover:underline transition-all opacity-90 hover:opacity-100" href="#">Contact Us</a>
+</div>
+<div class="flex flex-col gap-3">
+<a class="text-on-tertiary/80 dark:text-on-surface/80 hover:text-on-tertiary hover:underline transition-all opacity-90 hover:opacity-100" href="#">Privacy Policy</a>
+<a class="text-on-tertiary/80 dark:text-on-surface/80 hover:text-on-tertiary hover:underline transition-all opacity-90 hover:opacity-100" href="#">Terms of Service</a>
+</div>
+<div class="flex flex-col gap-3 justify-end md:text-right">
+<span class="opacity-60">© 2024 IIT Kharagpur. All rights reserved.</span>
+</div>
+</div>
+</footer>
+</body></html>
