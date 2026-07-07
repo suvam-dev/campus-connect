@@ -4,11 +4,12 @@ import Registration from "@/models/Registration";
 import Event from "@/models/Event";
 import { requireAdmin } from "@/lib/auth";
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
   try {
     await requireAdmin();
     await connectDB();
 
+    const params = await context.params;
     const eventId = params.id;
     const event = await Event.findById(eventId).lean();
 
