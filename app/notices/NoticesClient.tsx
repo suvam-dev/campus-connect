@@ -3,43 +3,35 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { PageLayout } from '@/components/layouts';
-import { PageHeader, FilterBar, ListLayout } from '@/components/shared';
-import { AlertCircle, FileText, Briefcase, Settings, BookOpen, ChevronRight, Filter, Trophy, Home, Library } from 'lucide-react';
+import { 
+  Search, SlidersHorizontal, ChevronDown, Calendar, 
+  LayoutGrid, SortDesc, BookOpen, Building2, Library, Trophy, 
+  ChevronRight, Briefcase, FileText, Settings, Bell, Circle
+} from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const CATEGORIES = [
-  { id: 'all', label: 'All Notices' },
-  { id: 'academic', label: 'Academic' },
-  { id: 'placement', label: 'Placement' },
-  { id: 'general', label: 'General' },
-  { id: 'administrative', label: 'Administrative' },
-  { id: 'admin', label: 'Admin' },
-  { id: 'campus', label: 'Campus' },
-  { id: 'sports', label: 'Sports' }
+  { id: 'all', label: 'All Notices', count: 24, icon: Bell },
+  { id: 'academic', label: 'Academic', count: 8, icon: BookOpen },
+  { id: 'placement', label: 'Placement', count: 3, icon: Briefcase },
+  { id: 'general', label: 'General', count: 4, icon: FileText },
+  { id: 'administrative', label: 'Administrative', count: 3, icon: Settings },
+  { id: 'admin', label: 'Admin', count: 2, icon: Building2 },
+  { id: 'campus', label: 'Campus', count: 2, icon: Library },
+  { id: 'sports', label: 'Sports', count: 2, icon: Trophy }
 ];
 
-const CATEGORY_COLORS: Record<string, string> = {
-  'Academic': 'bg-blue-100 text-blue-700',
-  'Placement': 'bg-purple-100 text-purple-700',
-  'Administrative': 'bg-orange-100 text-orange-700',
-  'Admin': 'bg-orange-100 text-orange-700',
-  'General': 'bg-emerald-100 text-emerald-700',
-  'Campus': 'bg-teal-100 text-teal-700',
-  'Sports': 'bg-red-100 text-red-700',
-};
-
-const ICON_MAP: Record<string, any> = {
-  AlertCircle,
-  Briefcase,
-  Settings,
-  BookOpen,
-  FileText,
-  Trophy,
-  Home,
-  Library
+const CATEGORY_STYLES: Record<string, { bg: string, text: string, iconBg: string, iconText: string, icon: any }> = {
+  'Academic': { bg: 'bg-indigo-50', text: 'text-indigo-600', iconBg: 'bg-indigo-50', iconText: 'text-indigo-600', icon: BookOpen },
+  'Placement': { bg: 'bg-purple-50', text: 'text-purple-600', iconBg: 'bg-purple-50', iconText: 'text-purple-600', icon: Briefcase },
+  'Administrative': { bg: 'bg-orange-50', text: 'text-orange-600', iconBg: 'bg-orange-50', iconText: 'text-orange-600', icon: Settings },
+  'Admin': { bg: 'bg-orange-50', text: 'text-orange-500', iconBg: 'bg-orange-50', iconText: 'text-orange-500', icon: Building2 },
+  'General': { bg: 'bg-emerald-50', text: 'text-emerald-600', iconBg: 'bg-emerald-50', iconText: 'text-emerald-600', icon: FileText },
+  'Campus': { bg: 'bg-emerald-50', text: 'text-emerald-500', iconBg: 'bg-emerald-50', iconText: 'text-emerald-500', icon: Library },
+  'Sports': { bg: 'bg-red-50', text: 'text-red-500', iconBg: 'bg-red-50', iconText: 'text-red-500', icon: Trophy },
 };
 
 export default function NoticesClient({ initialNotices }: { initialNotices: any[] }) {
@@ -47,9 +39,9 @@ export default function NoticesClient({ initialNotices }: { initialNotices: any[
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<string>('all');
 
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    applyFilters(query, activeCategory);
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    applyFilters(searchQuery, activeCategory);
   };
 
   const handleCategorySelect = (categoryId: string) => {
@@ -75,162 +67,209 @@ export default function NoticesClient({ initialNotices }: { initialNotices: any[
   };
 
   return (
-    <PageLayout>
-      <PageHeader
-        title="Notice Board"
-        description="Stay updated with the latest academic and administrative announcements"
-      />
-
-      <ListLayout
-        sidebar={
-          <div className="space-y-6">
-            <Card className="border-slate-200 shadow-sm rounded-2xl">
-              <CardContent className="p-5">
-                <div className="flex items-center gap-2 mb-4">
-                  <Filter className="w-4 h-4 text-slate-500" />
-                  <h3 className="font-semibold text-slate-900">Categories</h3>
-                </div>
-                <div className="space-y-1">
-                  {CATEGORIES.map(cat => {
-                    const isActive = activeCategory === cat.id;
-                    return (
-                      <button
-                        key={cat.id}
-                        onClick={() => handleCategorySelect(cat.id)}
-                        className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm transition-all duration-200 ${
-                          isActive 
-                            ? 'bg-slate-900 text-white font-medium shadow-md shadow-slate-900/10' 
-                            : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-                        }`}
-                      >
-                        <span>{cat.label}</span>
-                        {isActive && <ChevronRight className="w-4 h-4 opacity-70" />}
-                      </button>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-slate-200 shadow-sm rounded-2xl">
-              <CardContent className="p-5">
-                <h3 className="font-semibold text-slate-900 mb-4">Sort By</h3>
-                <select className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all cursor-pointer">
-                  <option>Newest First</option>
-                  <option>Oldest First</option>
-                  <option>Unread First</option>
-                </select>
-              </CardContent>
-            </Card>
+    <PageLayout className="bg-slate-50/50">
+      <div className="max-w-7xl mx-auto w-full pt-8 pb-16">
+        
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row items-center justify-between mb-12 px-2">
+          <div className="max-w-2xl mb-8 md:mb-0">
+            <h1 className="text-4xl md:text-5xl font-black tracking-tight text-[#0B1527] mb-4">
+              Notice Board
+            </h1>
+            <p className="text-lg text-slate-500 font-medium">
+              Stay informed with the latest academic and administrative announcements.
+            </p>
           </div>
-        }
-      >
-        <div className="space-y-6">
-          <div className="mb-8">
-            <FilterBar
-              placeholder="Search notices by keyword..."
-              onSearch={handleSearch}
-            />
+          {/* Megaphone Illustration Placeholder - Using CSS shapes for a premium feel without external assets */}
+          <div className="relative w-64 h-48 hidden md:block">
+            <div className="absolute inset-0 bg-gradient-to-tr from-indigo-100 to-purple-50 rounded-full blur-3xl opacity-60" />
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 text-indigo-500 opacity-80 animate-bounce">
+              <svg viewBox="0 0 24 24" fill="currentColor" className="w-32 h-32 rotate-[-20deg]">
+                <path d="M12 2C10.9 2 10 2.9 10 4V14L6.3 11.2C5.9 10.9 5.5 10.8 5 10.8H3C1.9 10.8 1 11.7 1 12.8V16.8C1 17.9 1.9 18.8 3 18.8H5C5.5 18.8 5.9 18.7 6.3 18.4L10 15.6V20C10 21.1 10.9 22 12 22C13.1 22 14 21.1 14 20V4C14 2.9 13.1 2 12 2ZM20.7 7.3L19.3 8.7C20.4 9.8 21 11.3 21 13C21 14.7 20.4 16.2 19.3 17.3L20.7 18.7C22.2 17.2 23 15.2 23 13C23 10.8 22.2 8.8 20.7 7.3ZM16.5 11.5L15.1 12.9C15.6 13.4 16 14.2 16 15C16 15.8 15.6 16.6 15.1 17.1L16.5 18.5C17.4 17.6 18 16.4 18 15C18 13.6 17.4 12.4 16.5 11.5Z" />
+              </svg>
+            </div>
+            {/* Sparkles */}
+            <div className="absolute top-4 left-10 text-amber-400">✦</div>
+            <div className="absolute bottom-8 left-20 text-purple-400">✦</div>
+            <div className="absolute top-10 right-4 text-indigo-300">✦</div>
           </div>
+        </div>
 
-          <div className="space-y-4">
-            <AnimatePresence>
-              {filteredNotices.length > 0 ? (
-                filteredNotices.map((notice, idx) => {
-                  const Icon = ICON_MAP[notice.iconType] || FileText;
-                  
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          
+          {/* Left Sidebar */}
+          <div className="lg:col-span-3 space-y-6">
+            {/* Categories */}
+            <Card className="border-slate-100 shadow-sm rounded-2xl overflow-hidden bg-white">
+              <CardContent className="p-4 space-y-1">
+                <div className="flex items-center gap-2 mb-3 px-3 pt-2">
+                  <LayoutGrid className="w-5 h-5 text-indigo-600" />
+                  <h3 className="font-bold text-slate-900 text-lg">Categories</h3>
+                </div>
+                {CATEGORIES.map(cat => {
+                  const isActive = activeCategory === cat.id;
+                  const Icon = cat.icon;
                   return (
-                    <motion.div
-                      key={notice.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.95 }}
-                      transition={{ delay: idx * 0.05, duration: 0.3 }}
+                    <button
+                      key={cat.id}
+                      onClick={() => handleCategorySelect(cat.id)}
+                      className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm transition-all duration-200 ${
+                        isActive 
+                          ? 'bg-[#5235FF] text-white shadow-md shadow-indigo-600/20 font-semibold' 
+                          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium'
+                      }`}
                     >
-                      <Card className={`group relative overflow-hidden transition-all duration-300 rounded-2xl border-slate-200 hover:border-slate-300 hover:shadow-md cursor-pointer bg-white ${notice.isUnread ? 'ring-1 ring-indigo-100' : ''}`}>
-                        {notice.isUnread && (
-                          <div className="absolute left-0 top-0 bottom-0 w-1 bg-indigo-500 rounded-l-2xl" />
-                        )}
-                        <CardContent className="p-6">
-                          <div className="flex gap-5">
-                            <div className={`flex-shrink-0 p-3.5 rounded-2xl transition-colors ${CATEGORY_COLORS[notice.category] || 'bg-slate-100 text-slate-600'}`}>
-                              <Icon className="w-6 h-6" />
+                      <div className="flex items-center gap-3">
+                        <Icon className={`w-[18px] h-[18px] ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                        <span>{cat.label}</span>
+                      </div>
+                      <span className={`${isActive ? 'text-indigo-100' : 'text-slate-400'}`}>
+                        {cat.count}
+                      </span>
+                    </button>
+                  );
+                })}
+              </CardContent>
+            </Card>
+
+            {/* Sort By */}
+            <Card className="border-slate-100 shadow-sm rounded-2xl bg-white">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2 mb-4 px-3 pt-2">
+                  <SortDesc className="w-5 h-5 text-indigo-600" />
+                  <h3 className="font-bold text-slate-900 text-lg">Sort By</h3>
+                </div>
+                <div className="px-3 pb-2">
+                  <div className="relative">
+                    <select className="w-full appearance-none bg-slate-50 border border-slate-200 text-slate-700 font-medium rounded-xl px-4 py-3 pr-10 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all cursor-pointer text-sm">
+                      <option>Newest First</option>
+                      <option>Oldest First</option>
+                      <option>Unread First</option>
+                    </select>
+                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Right Content */}
+          <div className="lg:col-span-9 space-y-6">
+            
+            {/* Search and Filter Row */}
+            <div className="flex items-center gap-4">
+              <form onSubmit={handleSearch} className="flex-1 relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <input 
+                  type="text"
+                  placeholder="Search notices by keyword..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-white border border-slate-200 text-slate-700 placeholder:text-slate-400 rounded-2xl pl-12 pr-4 py-4 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-400 transition-all shadow-sm font-medium"
+                />
+              </form>
+              <Button variant="outline" className="h-14 rounded-2xl border-slate-200 bg-white shadow-sm px-6 font-semibold text-slate-700 hover:bg-slate-50 hover:text-slate-900">
+                <SlidersHorizontal className="w-5 h-5 mr-2" />
+                Filters
+              </Button>
+            </div>
+
+            {/* Notices List */}
+            <div className="space-y-4">
+              <AnimatePresence>
+                {filteredNotices.length > 0 ? (
+                  filteredNotices.map((notice, idx) => {
+                    const style = CATEGORY_STYLES[notice.category] || { 
+                      bg: 'bg-slate-50', text: 'text-slate-600', iconBg: 'bg-slate-50', iconText: 'text-slate-600', icon: FileText 
+                    };
+                    const Icon = style.icon;
+
+                    return (
+                      <motion.div
+                        key={notice.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.98 }}
+                        transition={{ delay: idx * 0.05, duration: 0.3 }}
+                      >
+                        <Card className="border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 rounded-3xl bg-white overflow-hidden group cursor-pointer">
+                          <CardContent className="p-6 md:p-8 flex flex-col md:flex-row gap-6 md:gap-8">
+                            
+                            {/* Left Icon Box */}
+                            <div className={`shrink-0 w-24 h-24 rounded-2xl flex items-center justify-center ${style.iconBg}`}>
+                              <Icon className={`w-10 h-10 ${style.iconText}`} />
                             </div>
 
-                            <div className="flex-1 min-w-0">
+                            {/* Right Content */}
+                            <div className="flex-1 min-w-0 flex flex-col">
+                              {/* Header Row */}
                               <div className="flex items-start justify-between gap-4 mb-2">
-                                <div>
-                                  <div className="flex items-center gap-3 mb-1">
-                                    <h3 className="font-bold text-lg text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-2">
-                                      {notice.title}
-                                    </h3>
-                                    {notice.isUnread && (
-                                      <span className="shrink-0 flex h-2 w-2 rounded-full bg-indigo-500" />
-                                    )}
-                                  </div>
-                                  <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-                                    {notice.source}
-                                  </p>
+                                <div className="flex items-center gap-2">
+                                  <h3 className="font-bold text-xl text-slate-900 group-hover:text-[#5235FF] transition-colors line-clamp-2">
+                                    {notice.title}
+                                  </h3>
+                                  {notice.isUnread && (
+                                    <Circle className="w-2.5 h-2.5 fill-[#5235FF] text-[#5235FF] shrink-0" />
+                                  )}
                                 </div>
-                                <div className="flex-shrink-0 pt-1">
-                                  <Badge variant="secondary" className={`border-none font-semibold ${CATEGORY_COLORS[notice.category] || 'bg-slate-100 text-slate-700'}`}>
-                                    {notice.category}
-                                  </Badge>
-                                </div>
+                                <Badge variant="secondary" className={`shrink-0 border-none px-3 py-1 text-xs font-semibold rounded-lg ${style.bg} ${style.text}`}>
+                                  {notice.category}
+                                </Badge>
                               </div>
 
-                              <p className="text-slate-600 line-clamp-2 mb-4 leading-relaxed mt-3">
+                              {/* Source */}
+                              <p className={`text-[11px] font-bold uppercase tracking-wider mb-3 ${style.text}`}>
+                                {notice.source || 'CAMPUS ADMINISTRATION'}
+                              </p>
+
+                              {/* Description */}
+                              <p className="text-slate-500 font-medium leading-relaxed mb-6 line-clamp-2">
                                 {notice.description}
                               </p>
 
-                              {notice.tags && notice.tags.length > 0 && (
-                                <div className="flex flex-wrap gap-2 mb-4">
-                                  {notice.tags.map((tag: string, i: number) => (
-                                    <span key={i} className="px-2 py-0.5 text-[10px] font-medium text-slate-500 bg-slate-100 rounded-md">
-                                      {tag}
-                                    </span>
-                                  ))}
+                              {/* Footer Row */}
+                              <div className="mt-auto flex items-center justify-between pt-4">
+                                <div className="flex items-center gap-2 text-slate-500 font-semibold text-sm">
+                                  <Calendar className="w-[18px] h-[18px]" />
+                                  {notice.date}
                                 </div>
-                              )}
-
-                              <div className="flex items-center justify-between mt-2 pt-4 border-t border-slate-100">
-                                <span className="text-sm font-medium text-slate-400">{notice.date}</span>
-                                <Link href={`/notices/${notice.id}`}>
-                                  <Button variant="ghost" className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 -mr-4 rounded-xl font-semibold">
-                                    Read Full Notice <ChevronRight className="w-4 h-4 ml-1" />
-                                  </Button>
-                                </Link>
+                                <div className="flex items-center text-[#5235FF] font-bold text-sm group-hover:translate-x-1 transition-transform">
+                                  Read Full Notice <ChevronRight className="w-[18px] h-[18px] ml-1" />
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </motion.div>
-                  );
-                })
-              ) : (
-                <motion.div 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-center py-20 rounded-3xl border border-dashed border-slate-200 bg-white"
-                >
-                  <FileText className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-                  <p className="text-lg font-semibold text-slate-900 mb-1">No notices found</p>
-                  <p className="text-sm text-slate-500">Try adjusting your search or category filters.</p>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          {filteredNotices.length > 0 && (
-            <div className="flex justify-center mt-10 pt-4">
-              <Button variant="outline" className="rounded-full px-8 border-slate-300 hover:bg-slate-50 font-semibold shadow-sm">
-                Load More Announcements
-              </Button>
+                          </CardContent>
+                        </Card>
+                      </motion.div>
+                    );
+                  })
+                ) : (
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-center py-24 rounded-3xl border border-dashed border-slate-200 bg-white"
+                  >
+                    <FileText className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+                    <p className="text-xl font-bold text-slate-900 mb-2">No notices found</p>
+                    <p className="text-slate-500 font-medium">Try adjusting your search or category filters.</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
-          )}
+
+            {/* Load More Button */}
+            {filteredNotices.length > 0 && (
+              <div className="flex justify-center mt-10">
+                <Button variant="outline" className="h-12 rounded-full px-8 border-slate-200 bg-white shadow-sm font-bold text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-all">
+                  Load More Announcements <ChevronDown className="w-4 h-4 ml-2" />
+                </Button>
+              </div>
+            )}
+
+          </div>
         </div>
-      </ListLayout>
+      </div>
     </PageLayout>
   );
 }
