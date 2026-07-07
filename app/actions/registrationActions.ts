@@ -13,6 +13,10 @@ export async function registerForEvent(eventId: string) {
       return { success: false, error: "Please log in to register." };
     }
 
+    if (!dbUser.profileCompleted) {
+      return { success: false, error: "INCOMPLETE_PROFILE" };
+    }
+
     await connectDB();
 
     const event = await Event.findById(eventId).lean();

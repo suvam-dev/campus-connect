@@ -10,6 +10,13 @@ const UserSchema = new mongoose.Schema(
     department: { type: String },
     year: { type: String },
     profileImage: { type: String },
+    gender: { 
+      type: String, 
+      enum: ['Male', 'Female', 'Other', 'Prefer not to say'],
+      default: null 
+    },
+    collegeEmail: { type: String, default: null },
+    profileCompleted: { type: Boolean, default: false },
     role: {
       type: String,
       enum: ['student', 'society_admin', 'super_admin'],

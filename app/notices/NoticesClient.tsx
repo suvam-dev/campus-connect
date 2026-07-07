@@ -2,16 +2,29 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { PageLayout } from '@/components/layouts';
 import { 
   Search, SlidersHorizontal, ChevronDown, Calendar, 
   LayoutGrid, SortDesc, BookOpen, Building2, Library, Trophy, 
-  ChevronRight, Briefcase, FileText, Settings, Bell, Circle
+  ChevronRight, Briefcase, FileText, Settings, Bell, Circle,
+  Home, AlertCircle
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
+
+const ICON_MAP: Record<string, any> = {
+  AlertCircle,
+  Briefcase,
+  Settings,
+  BookOpen,
+  FileText,
+  Trophy,
+  Home,
+  Library
+};
 
 const CATEGORIES = [
   { id: 'all', label: 'All Notices', count: 24, icon: Bell },
@@ -80,8 +93,7 @@ export default function NoticesClient({ initialNotices }: { initialNotices: any[
               Stay informed with the latest academic and administrative announcements.
             </p>
           </div>
-          {/* Megaphone Illustration Placeholder - Using CSS shapes for a premium feel without external assets */}
-          <div className="relative w-64 h-48 hidden md:block">
+          <div className="relative w-64 h-64 hidden md:block shrink-0">
             <div className="absolute inset-0 bg-gradient-to-tr from-indigo-100 to-purple-50 rounded-full blur-3xl opacity-60" />
             <div className="absolute right-0 top-1/2 -translate-y-1/2 text-indigo-500 opacity-80 animate-bounce">
               <svg viewBox="0 0 24 24" fill="currentColor" className="w-32 h-32 rotate-[-20deg]">
@@ -181,9 +193,9 @@ export default function NoticesClient({ initialNotices }: { initialNotices: any[
                 {filteredNotices.length > 0 ? (
                   filteredNotices.map((notice, idx) => {
                     const style = CATEGORY_STYLES[notice.category] || { 
-                      bg: 'bg-slate-50', text: 'text-slate-600', iconBg: 'bg-slate-50', iconText: 'text-slate-600', icon: FileText 
+                      bg: 'bg-slate-50', text: 'text-slate-600', iconBg: 'bg-slate-50', iconText: 'text-slate-600' 
                     };
-                    const Icon = style.icon;
+                    const Icon = ICON_MAP[notice.iconType] || FileText;
 
                     return (
                       <motion.div

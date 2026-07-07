@@ -4,6 +4,9 @@ import { useState, useTransition } from "react";
 import { registerForEvent } from "@/app/actions/registrationActions";
 import { Button } from "@/components/ui/button";
 import { QRCodeSVG } from "qrcode.react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { UserCircle2 } from "lucide-react";
+import Link from "next/link";
 
 interface RegisterButtonProps {
   eventId: string;
@@ -25,7 +28,11 @@ export default function RegisterButton({ eventId, isRegisteredInitial, registrat
         setIsRegistered(true);
         if (result.registrationId) setRegistrationId(result.registrationId);
       } else {
-        setError(result.error || "An error occurred");
+        if (result.error === "INCOMPLETE_PROFILE") {
+          setError("INCOMPLETE_PROFILE");
+        } else {
+          setError(result.error || "An error occurred");
+        }
       }
     });
   };
@@ -49,15 +56,39 @@ export default function RegisterButton({ eventId, isRegisteredInitial, registrat
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <Button 
-        onClick={handleRegister} 
-        disabled={isPending}
-        className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700"
-      >
-        {isPending ? "Registering..." : "Register Now"}
-      </Button>
-      {error && <span className="text-sm text-red-500">{error}</span>}
-    </div>
+    <>
+      <div className="flex flex-col gap-2">
+        <Button 
+          onClick={handleRegister} 
+          disabled={isPending}
+          className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700"
+        >
+          {isPending ? "Registering..." : "Register Now"}
+        </Button>
+        {error && error !== "INCOMPLETE_PROFILE" && <span className="text-sm text-red-500">{error}</span>}
+      </div>
+
+      <Dialog open={error === "INCOMPLETE_PROFILE"} onOpenChange={(open) => !open && setError(null)}>
+        <DialogContent className="sm:max-w-[425px] rounded-2xl">
+          <DialogHeader>
+            <div className="mx-auto w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
+              <UserCircle2 className="w-6 h-6 text-indigo-600" />
+            </div>
+            <DialogTitle className="text-center text-xl font-bold">Complete Your Profile</DialogTitle>
+            <DialogDescription className="text-center text-slate-500 pt-2">
+              To register for campus events, please complete your profile. It only takes a minute!
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex flex-col sm:flex-col gap-2 mt-6">
+            <Button asChild className="w-full bg-indigo-600 hover:bg-indigo-700 rounded-xl h-11">
+              <Link href="/profile">Complete Profile</Link>
+            </Button>
+            <Button variant="ghost" className="w-full rounded-xl h-11 text-slate-500 hover:text-slate-900" onClick={() => setError(null)}>
+              Maybe Later
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
