@@ -18,7 +18,7 @@ export function PageLayout({ children, className = '' }: PageLayoutProps) {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
-        className={`flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 ${className}`}
+        className={`flex-1 max-w-[1600px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10 ${className}`}
       >
         {children}
       </motion.main>

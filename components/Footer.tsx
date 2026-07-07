@@ -6,7 +6,7 @@ import Link from 'next/link';
 export function Footer() {
   return (
     <footer className="w-full border-t border-gray-200 bg-gray-50 mt-12">
-      <div className="max-w-[1400px] w-full mx-auto p-6 md:p-8">
+      <div className="max-w-[1600px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div>
             <div className="font-bold text-slate-900 mb-3">Campus Connect</div>

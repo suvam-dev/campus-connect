@@ -1,11 +1,11 @@
-"use client";
-
+import React from 'react';
 import { PageLayout } from '@/components/layouts';
 import { HeroCard } from '@/components/HeroCard';
 import { NoticeCard } from '@/components/NoticeCard';
 import { EventCard } from '@/components/EventCard';
 import { QuickLinkCard } from '@/components/QuickLinkCard';
 import { CalendarCard } from '@/components/CalendarCard';
+// Direct DB imports removed in favor of REST API
 import { 
   BookOpen, 
   GraduationCap, 
@@ -13,34 +13,51 @@ import {
   Bus,
   Utensils,
   Map,
-  Dna,
-  Mic,
-  Leaf,
-  Music
 } from 'lucide-react';
 
-const NOTICES = [
-  { id: 1, title: "Mid-Semester Exams Schedule Released", category: "Academic", date: "Today" },
-  { id: 2, title: "Hostel Allocation for Incoming Freshers", category: "Admin", date: "Yesterday" },
-  { id: 3, title: "Library Timings Extended for Finals", category: "Campus", date: "2d ago" },
-];
-
-const EVENTS = [
-  { id: 1, title: "Guest Lecture by Dr. Sarah Chen", venue: "Auditorium", date: "Tomorrow, 4 PM", icon: Mic },
-  { id: 2, title: "AI in Sustainable Engineering", venue: "Tech Lab 4", date: "Friday, 10 AM", icon: Leaf },
-  { id: 3, title: "Spring Fest Prelims", venue: "Open Air Theatre", date: "Saturday, 6 PM", icon: Music },
-];
-
 const QUICK_LINKS = [
-  { id: 1, title: "ERP", icon: BookOpen },
-  { id: 2, title: "Courses", icon: GraduationCap },
-  { id: 3, title: "Library", icon: Library },
-  { id: 4, title: "Transport", icon: Bus },
-  { id: 5, title: "Mess", icon: Utensils },
-  { id: 6, title: "Map", icon: Map },
+  { id: 1, title: "ERP", iconName: "BookOpen" },
+  { id: 2, title: "Courses", iconName: "GraduationCap" },
+  { id: 3, title: "Library", iconName: "Library" },
+  { id: 4, title: "Transport", iconName: "Bus" },
+  { id: 5, title: "Mess", iconName: "Utensils" },
+  { id: 6, title: "Map", iconName: "Map" },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
+  let dbEvents = [];
+  let dbNotices = [];
+  
+  const revalidateTime = process.env.NODE_ENV === 'development' ? 5 : 900;
+  
+  try {
+    const eventsRes = await fetch(`${baseUrl}/api/events?limit=6`, { next: { revalidate: revalidateTime } });
+    if (eventsRes.ok) dbEvents = await eventsRes.json();
+    
+    const noticesRes = await fetch(`${baseUrl}/api/notices?limit=5`, { next: { revalidate: revalidateTime } });
+    if (noticesRes.ok) dbNotices = await noticesRes.json();
+  } catch (error) {
+    console.error("Failed to fetch data on home page:", error);
+  }
+
+  const notices = dbNotices.map((n: any) => ({
+    id: n.id,
+    title: n.title,
+    category: n.category,
+    date: n.date,
+    tags: n.tags || [],
+  }));
+
+  const events = dbEvents.map((e: any) => ({
+    id: e.id,
+    title: e.title,
+    venue: e.venue,
+    date: `${e.date} ${e.time}`,
+    tags: e.tags || [],
+  }));
+
   return (
     <PageLayout>
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 auto-rows-min">
@@ -53,12 +70,13 @@ export default function Home() {
             </div>
             
             <div className="flex flex-col gap-3">
-              {NOTICES.map((notice, idx) => (
+              {notices.map((notice: any, idx: number) => (
                 <NoticeCard 
                   key={notice.id}
                   title={notice.title}
                   category={notice.category}
                   date={notice.date}
+                  tags={notice.tags}
                   index={idx}
                 />
               ))}
@@ -72,7 +90,7 @@ export default function Home() {
                   <QuickLinkCard 
                     key={link.id}
                     title={link.title}
-                    icon={link.icon}
+                    iconName={link.iconName}
                     index={idx}
                   />
                 ))}
@@ -83,10 +101,10 @@ export default function Home() {
           {/* Center Column: Hero & Main Events (6 cols on desktop) */}
           <div className="lg:col-span-6 flex flex-col gap-6">
             <HeroCard 
-              title="Advanced Robotics Workshop 2026"
-              venue="Innovation Hub, Sector 3"
-              date="Starts Monday, 9:00 AM"
-              imageUrl="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=2940&auto=format&fit=crop"
+              title="Kshitij 2026: Asia's Largest Techno-Management Fest"
+              venue="IIT Kharagpur Campus"
+              date="Starts Friday, 9:00 AM"
+              imageUrl="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=2940&auto=format&fit=crop"
               className="h-[400px]"
             />
             
@@ -96,12 +114,13 @@ export default function Home() {
             </div>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {EVENTS.slice(0,2).map((event, idx) => (
+              {events.slice(0,2).map((event: any, idx: number) => (
                 <EventCard 
                   key={event.id}
                   title={event.title}
                   venue={event.venue}
                   date={event.date}
+                  tags={event.tags}
                   index={idx}
                   className="h-full min-h-[200px]"
                 />
@@ -115,12 +134,13 @@ export default function Home() {
             
             <div className="flex flex-col gap-4">
               {/* Remaining Event */}
-              {EVENTS.slice(2).map((event, idx) => (
+              {events.slice(2).map((event: any, idx: number) => (
                 <EventCard 
                   key={event.id}
                   title={event.title}
                   venue={event.venue}
                   date={event.date}
+                  tags={event.tags}
                   index={idx + 2}
                 />
               ))}

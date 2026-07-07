@@ -13,7 +13,7 @@ export function CalendarCard({ className }: { className?: string }) {
     >
       <Card className={cn("group cursor-pointer rounded-2xl border-slate-200 shadow-sm relative overflow-hidden min-h-[160px]", className)}>
         {/* Subtle background gradient to make it stand out just a bit, but maintaining light theme */}
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-white to-purple-50 opacity-80" />
+        <div className="absolute inset-0 bg-gradient-to-br from-yellow-50/80 via-white to-orange-50/60 opacity-90" />
         
         <CardContent className="p-6 relative z-10 flex flex-col justify-between h-full">
           <div className="flex justify-between items-start">
