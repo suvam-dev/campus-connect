@@ -3,7 +3,7 @@ import { connectDB } from '@/lib/mongodb';
 import Society from '@/models/Society';
 import { DataTable } from '@/components/admin/DataTable';
 import { columns, SocietyRow } from './columns';
-import { buttonVariants } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button-variants';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
 
