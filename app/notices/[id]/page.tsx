@@ -2,7 +2,6 @@ import React from 'react';
 import { notFound } from 'next/navigation';
 import NoticeDetailClient from './NoticeDetailClient';
 
-export const dynamic = "force-dynamic";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -15,7 +14,7 @@ export default async function NoticeDetailPage(props: PageProps) {
   let notice = null;
   
   try {
-    const res = await fetch(`${baseUrl}/api/notices/${params.id}`, { next: { revalidate: 900 } });
+    const res = await fetch(`${baseUrl}/api/notices/${params.id}`, { next: { tags: ['notices'] } });
     if (!res.ok) {
       if (res.status === 404) return notFound();
       throw new Error("Failed to fetch notice");

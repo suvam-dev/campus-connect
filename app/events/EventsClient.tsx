@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
 import { PageLayout } from '@/components/layouts';
 import { EmptyState } from '@/components/shared';
 import { EventCard } from '@/components/EventCard';
@@ -23,49 +22,32 @@ const FILTER_OPTIONS = [
 ];
 
 export default function EventsClient({ initialEvents }: { initialEvents: any[] }) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
-  
-  const currentCategory = searchParams.get('categories') || 'all';
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentCategory, setCurrentCategory] = useState('all');
 
-  const [events, setEvents] = useState<any[]>(initialEvents || []);
-  const [isLoading, setIsLoading] = useState(!initialEvents || initialEvents.length === 0);
+  const filteredEvents = React.useMemo(() => {
+    let result = initialEvents || [];
+    if (currentCategory !== 'all') {
+      result = result.filter((e: any) => e.category.toLowerCase() === currentCategory.toLowerCase());
+    }
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter((e: any) => 
+        e.title.toLowerCase().includes(q) ||
+        e.shortDescription?.toLowerCase().includes(q)
+      );
+    }
+    return result;
+  }, [initialEvents, currentCategory, searchQuery]);
 
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        if (events.length === 0) setIsLoading(true);
-        const res = await fetch(`/api/events?${searchParams.toString()}`);
-        if (res.ok) {
-          const data = await res.json();
-          setEvents(data);
-        }
-      } catch (error) {
-        console.error("Client fetch error:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchEvents();
-  }, [searchParams]);
+  const events = filteredEvents;
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    const params = new URLSearchParams(searchParams.toString());
-    if (searchQuery) params.set('q', searchQuery);
-    else params.delete('q');
-    router.push(`/events?${params.toString()}`);
   };
 
   const handleCategoryClick = (id: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (id !== 'all') {
-      params.set('categories', id);
-    } else {
-      params.delete('categories');
-    }
-    router.push(`/events?${params.toString()}`);
+    setCurrentCategory(id);
   };
 
   return (
@@ -152,11 +134,7 @@ export default function EventsClient({ initialEvents }: { initialEvents: any[] }
         </div>
       </div>
 
-      {isLoading ? (
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-        </div>
-      ) : events.length > 0 ? (
+      {events.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {events.map((event, idx) => (
              <EventCard 

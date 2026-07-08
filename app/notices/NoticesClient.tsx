@@ -47,41 +47,9 @@ const CATEGORY_STYLES: Record<string, { bg: string, text: string, iconBg: string
 };
 
 export default function NoticesClient({ initialNotices }: { initialNotices: any[] }) {
-  const [initialNoticesState, setInitialNoticesState] = useState<any[]>(initialNotices || []);
   const [filteredNotices, setFilteredNotices] = useState<any[]>(initialNotices || []);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<string>('all');
-  const [isLoading, setIsLoading] = useState(!initialNotices || initialNotices.length === 0);
-
-  useEffect(() => {
-    const fetchNotices = async () => {
-      try {
-        if (initialNoticesState.length === 0) setIsLoading(true);
-        const res = await fetch('/api/notices');
-        if (res.ok) {
-          const data = await res.json();
-          setInitialNoticesState(data);
-          // apply filters using new data
-          let result = data;
-          if (activeCategory !== 'all') {
-            result = result.filter((n: any) => n.category.toLowerCase() === activeCategory);
-          }
-          if (searchQuery) {
-            result = result.filter((n: any) => 
-              n.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              n.description.toLowerCase().includes(searchQuery.toLowerCase())
-            );
-          }
-          setFilteredNotices(result);
-        }
-      } catch (error) {
-        console.error("Client fetch error:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchNotices();
-  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,7 +62,7 @@ export default function NoticesClient({ initialNotices }: { initialNotices: any[
   };
 
   const applyFilters = (query: string, category: string) => {
-    let result = initialNoticesState;
+    let result = initialNotices || [];
     
     if (category !== 'all') {
       result = result.filter(n => n.category.toLowerCase() === category);
@@ -235,14 +203,9 @@ export default function NoticesClient({ initialNotices }: { initialNotices: any[
 
             {/* Notices List */}
             <div className="space-y-4">
-              {isLoading ? (
-                <div className="flex justify-center items-center h-64 bg-white rounded-3xl shadow-sm border border-slate-100">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-                </div>
-              ) : (
-                <AnimatePresence>
-                  {filteredNotices.length > 0 ? (
-                    filteredNotices.map((notice, idx) => {
+              <AnimatePresence>
+                {filteredNotices.length > 0 ? (
+                  filteredNotices.map((notice, idx) => {
                     const style = CATEGORY_STYLES[notice.category] || { 
                       bg: 'bg-slate-50', text: 'text-slate-600', iconBg: 'bg-slate-50', iconText: 'text-slate-600' 
                     };
@@ -321,7 +284,6 @@ export default function NoticesClient({ initialNotices }: { initialNotices: any[
                   </motion.div>
                   )}
                 </AnimatePresence>
-              )}
             </div>
 
             {/* Load More Button */}

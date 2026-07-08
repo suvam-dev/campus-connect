@@ -9,7 +9,6 @@ import { BookOpen, Trophy, Cpu, ChevronRight, Calendar as CalendarIcon } from 'l
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
-export const dynamic = "force-dynamic";
 
 const QUICK_LINKS = [
   { id: 1, title: "ERP", iconName: "BookOpen" },

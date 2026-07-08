@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation';
 import EventDetailClient from './EventDetailClient';
 import { checkRegistrationStatus } from '@/app/actions/registrationActions';
 
-export const dynamic = "force-dynamic";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -16,7 +15,7 @@ export default async function EventDetailPage(props: PageProps) {
   let event = null;
   
   try {
-    const res = await fetch(`${baseUrl}/api/events/${params.id}`, { next: { revalidate: 900 } });
+    const res = await fetch(`${baseUrl}/api/events/${params.id}`, { next: { tags: ['events'] } });
     if (!res.ok) {
       if (res.status === 404) return notFound();
       throw new Error("Failed to fetch event");

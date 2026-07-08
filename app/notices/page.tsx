@@ -1,7 +1,6 @@
 import React from 'react';
 import NoticesClient from './NoticesClient';
 
-export const dynamic = "force-dynamic";
 // DB calls refactored to REST API
 
 export default async function NoticesPage() {
@@ -9,7 +8,7 @@ export default async function NoticesPage() {
   
   let initialNotices = [];
   try {
-    const res = await fetch(`${baseUrl}/api/notices`, { next: { revalidate: 900 } });
+    const res = await fetch(`${baseUrl}/api/notices`, { next: { tags: ['notices'] } });
     if (res.ok) {
       initialNotices = await res.json();
     }
