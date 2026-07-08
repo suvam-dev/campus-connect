@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { PageLayout } from '@/components/layouts';
@@ -29,7 +29,26 @@ export default function EventsClient({ initialEvents }: { initialEvents: any[] }
   
   const currentCategory = searchParams.get('categories') || 'all';
 
-  const events = initialEvents;
+  const [events, setEvents] = useState<any[]>(initialEvents || []);
+  const [isLoading, setIsLoading] = useState(!initialEvents || initialEvents.length === 0);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        if (events.length === 0) setIsLoading(true);
+        const res = await fetch(`/api/events?${searchParams.toString()}`);
+        if (res.ok) {
+          const data = await res.json();
+          setEvents(data);
+        }
+      } catch (error) {
+        console.error("Client fetch error:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchEvents();
+  }, [searchParams]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -133,7 +152,11 @@ export default function EventsClient({ initialEvents }: { initialEvents: any[] }
         </div>
       </div>
 
-      {events.length > 0 ? (
+      {isLoading ? (
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+        </div>
+      ) : events.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {events.map((event, idx) => (
              <EventCard 
