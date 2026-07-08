@@ -76,11 +76,11 @@ export default function NewEventPage() {
           </div>
           <div>
             <label htmlFor="status" className="block text-sm font-medium text-slate-700">Status</label>
-            <select id="status" name="status" defaultValue="Published"
+            <select id="status" name="status" defaultValue="published"
                     className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border">
-              <option value="Draft">Draft</option>
-              <option value="Published">Published</option>
-              <option value="Cancelled">Cancelled</option>
+              <option value="draft">Draft</option>
+              <option value="published">Published</option>
+              <option value="cancelled">Cancelled</option>
             </select>
           </div>
         </div>
