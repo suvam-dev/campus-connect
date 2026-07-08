@@ -18,7 +18,7 @@ function safeReadPackageJson() {
     const p = path.resolve(process.cwd(), 'package.json');
     const raw = fs.readFileSync(p, 'utf8');
     return JSON.parse(raw);
-  } catch (err) {
+  } catch (err: any) {
     return null;
   }
 }
@@ -132,7 +132,7 @@ export async function upsertClerkUser(profileOrRaw: ClerkProfile | any) {
                 await society.save();
               }
             }
-          } catch (err) {
+          } catch (err: any) {
             console.warn('Failed to attach user to society admins:', err?.message || err);
           }
         } else if (invite.role === 'student') {
@@ -150,7 +150,7 @@ export async function upsertClerkUser(profileOrRaw: ClerkProfile | any) {
                 await society.save();
               }
             }
-          } catch (err) {
+          } catch (err: any) {
             console.warn('Failed to attach user to society members:', err?.message || err);
           }
         }
@@ -161,7 +161,7 @@ export async function upsertClerkUser(profileOrRaw: ClerkProfile | any) {
         console.log('Accepted invite for user', email, 'society', invite.society.toString());
       }
     }
-  } catch (err) {
+  } catch (err: any) {
     console.warn('Invite processing error:', err?.message || err);
   }
 

@@ -9,7 +9,7 @@ import { z } from "zod";
 
 const profileSchema = z.object({
   gender: z.enum(["Male", "Female", "Other", "Prefer not to say"], {
-    errorMap: () => ({ message: "Please select a valid gender" }),
+    message: "Please select a valid gender",
   }),
   phone: z.string().regex(/^\+91[0-9]{10}$/, "Must be a valid Indian phone number starting with +91"),
   collegeEmail: z.string().email("Invalid email address").endsWith("@kgpian.iitkgp.ac.in", "Must be a valid @kgpian.iitkgp.ac.in email"),
@@ -121,7 +121,7 @@ export async function updateProfile(data: {
     return { success: true };
   } catch (error: unknown) {
     if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors[0].message };
+      return { success: false, error: error.issues[0]?.message || "Validation failed." };
     }
     console.error("updateProfile error:", error);
     return { success: false, error: "Failed to update profile." };

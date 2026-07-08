@@ -4,7 +4,7 @@ import Society from '@/models/Society';
 import Event from '@/models/Event';
 import User from '@/models/User';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
@@ -26,11 +26,12 @@ export default async function SocietyAdminPage({ params }: { params: { id: strin
           <h1 className="text-2xl font-bold tracking-tight">{society.name}</h1>
           <p className="text-muted-foreground">{society.description || "Manage society details, events, and members."}</p>
         </div>
-        <Button asChild>
-          <Link href={`/admin/events/new?societyId=${society._id.toString()}`}>
-            <Plus className="mr-2 h-4 w-4" /> Create Event
-          </Link>
-        </Button>
+        <Link 
+          href={`/admin/events/new?societyId=${society._id.toString()}`}
+          className={buttonVariants()}
+        >
+          <Plus className="mr-2 h-4 w-4" /> Create Event
+        </Link>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -79,9 +80,12 @@ export default async function SocietyAdminPage({ params }: { params: { id: strin
                       <h4 className="font-semibold">{e.title}</h4>
                       <p className="text-sm text-muted-foreground">{new Date(e.date).toLocaleDateString()} @ {e.venue}</p>
                     </div>
-                    <Button variant="outline" size="sm" asChild>
-                      <Link href={`/admin/events/${e._id.toString()}/edit`}>Manage</Link>
-                    </Button>
+                    <Link 
+                      href={`/admin/events/${e._id.toString()}/edit`}
+                      className={buttonVariants({ variant: "outline", size: "sm" })}
+                    >
+                      Manage
+                    </Link>
                   </div>
                 ))}
               </div>

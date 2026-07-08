@@ -15,7 +15,7 @@ import { updateProfile } from '@/app/actions/profileActions';
 // Using the same schema from the server for client-side validation
 const profileSchema = z.object({
   gender: z.enum(["Male", "Female", "Other", "Prefer not to say"], {
-    errorMap: () => ({ message: "Please select a valid gender" }),
+    message: "Please select a valid gender",
   }),
   phone: z.string().regex(/^\+91[0-9]{10}$/, "Must be a valid Indian phone number starting with +91 (e.g. +919876543210)"),
   collegeEmail: z.string().email("Invalid email").endsWith("@kgpian.iitkgp.ac.in", "Must be a valid @kgpian.iitkgp.ac.in email"),
@@ -24,7 +24,7 @@ const profileSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
-export default function ProfileClient({ initialProfile, stats }: { initialProfile: Record<string, unknown>, stats: Record<string, unknown> }) {
+export default function ProfileClient({ initialProfile, stats }: { initialProfile: Record<string, any>, stats: Record<string, any> }) {
   const [isPending, startTransition] = useTransition();
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 

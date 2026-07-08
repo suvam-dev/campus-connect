@@ -5,7 +5,7 @@ import { getCurrentUser } from '@/lib/auth';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Building2, CalendarDays, Users } from 'lucide-react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
 
 export default async function AdminPage() {
   await connectDB();
@@ -14,7 +14,7 @@ export default async function AdminPage() {
   try {
     const authData = await getCurrentUser();
     if (authData) user = authData.dbUser;
-  } catch (err) {
+  } catch (err: any) {
     // Not signed in
   }
 
@@ -89,9 +89,12 @@ export default async function AdminPage() {
                         <p className="text-xs text-muted-foreground line-clamp-1">{s.description || s.slug}</p>
                       </div>
                     </div>
-                    <Button variant="secondary" size="sm" asChild>
-                      <Link href={`/admin/societies/${s._id.toString()}`}>Manage</Link>
-                    </Button>
+                    <Link 
+                      href={`/admin/societies/${s._id.toString()}`} 
+                      className={buttonVariants({ variant: "secondary", size: "sm" })}
+                    >
+                      Manage
+                    </Link>
                   </div>
                 ))}
               </div>
@@ -103,16 +106,18 @@ export default async function AdminPage() {
             <CardTitle>Quick Actions</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            <Button className="w-full justify-start" variant="outline" asChild>
-              <Link href="/admin/events/new">
-                <CalendarDays className="mr-2 h-4 w-4" /> Create New Event
-              </Link>
-            </Button>
-            <Button className="w-full justify-start" variant="outline" asChild>
-              <Link href="/admin/invites/new">
-                <Users className="mr-2 h-4 w-4" /> Invite Admin or Member
-              </Link>
-            </Button>
+            <Link 
+              href="/admin/events/new" 
+              className={buttonVariants({ variant: "outline", className: "w-full justify-start" })}
+            >
+              <CalendarDays className="mr-2 h-4 w-4" /> Create New Event
+            </Link>
+            <Link 
+              href="/admin/invites/new" 
+              className={buttonVariants({ variant: "outline", className: "w-full justify-start" })}
+            >
+              <Users className="mr-2 h-4 w-4" /> Invite Admin or Member
+            </Link>
           </CardContent>
         </Card>
       </div>

@@ -48,6 +48,14 @@ export async function getCurrentUser() {
   
   let dbUser = await User.findOne({ clerkId: clerkUser.id });
   
+  if (!dbUser && email) {
+    dbUser = await User.findOne({ email });
+    if (dbUser) {
+      dbUser.clerkId = clerkUser.id;
+      await dbUser.save();
+    }
+  }
+  
   const isSuperAdmin = email === 'suvam1061@gmail.com';
   const role = isSuperAdmin ? 'super_admin' : 'student';
 

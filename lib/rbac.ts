@@ -50,7 +50,7 @@ export async function checkPermission(userId: string | any, societyId: string | 
       ];
       return defaultAdminPerms.includes(permission);
     }
-  } catch (err) {
+  } catch (err: any) {
     console.warn('RBAC fallback check failed', err?.message || err);
   }
 

@@ -23,12 +23,12 @@ export async function getCurrentUserFromReq(reqOrHeaders: Request | Headers) {
     // getAuth accepts undefined in some versions; pass the Request when available
     const maybeReq = (reqOrHeaders as Request) || undefined;
     const auth = getAuth(maybeReq as any);
-    const clerkUserId = auth?.userId || auth?.user_id || null;
+    const clerkUserId = auth?.userId || null;
     if (clerkUserId) {
       const user = await User.findOne({ clerkId: clerkUserId }).lean();
       return user || null;
     }
-  } catch (err) {
+  } catch (err: any) {
     // fall back to header parsing if Request not available or Clerk not configured
   }
 

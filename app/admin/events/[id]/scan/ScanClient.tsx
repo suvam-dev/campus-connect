@@ -47,7 +47,7 @@ export default function ScanClient({ eventId }: { eventId: string }) {
           }}
           onError={(err: any) => console.error(err)}
           formats={["qr_code"]}
-          components={{ audio: false }}
+
         />
       </div>
 

@@ -16,7 +16,7 @@ export async function POST(req: Request) {
   let payload: any;
   try {
     payload = JSON.parse(raw);
-  } catch (err) {
+  } catch (err: any) {
     return new Response('invalid json', { status: 400 });
   }
 

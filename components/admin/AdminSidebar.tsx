@@ -53,11 +53,9 @@ export function AdminSidebar({ isSuperAdmin = false }: { isSuperAdmin?: boolean 
                 const isActive = pathname === item.url || (pathname.startsWith(item.url + '/') && item.url !== '/admin' && item.url !== '/super-admin');
                 return (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild isActive={isActive} tooltip={item.title}>
-                      <Link href={item.url}>
-                        <item.icon />
-                        <span>{item.title}</span>
-                      </Link>
+                    <SidebarMenuButton render={<Link href={item.url} />} isActive={isActive} tooltip={item.title}>
+                      <item.icon />
+                      <span>{item.title}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 );
@@ -69,11 +67,9 @@ export function AdminSidebar({ isSuperAdmin = false }: { isSuperAdmin?: boolean 
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip="Return to App">
-              <Link href="/">
-                <ArrowLeft />
-                <span>Return to App</span>
-              </Link>
+            <SidebarMenuButton render={<Link href="/" />} tooltip="Return to App">
+              <ArrowLeft />
+              <span>Return to App</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

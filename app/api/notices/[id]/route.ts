@@ -8,8 +8,8 @@ interface Params {
 
 // GET /api/notices/[id]
 export async function GET(request: NextRequest, props: Params) {
+  const params = await props.params;
   try {
-    const params = await props.params;
     await connectDB();
     
     const notice = await Notice.findById(params.id).lean();
@@ -42,8 +42,8 @@ export async function GET(request: NextRequest, props: Params) {
 
 // PATCH /api/notices/[id]
 export async function PATCH(request: NextRequest, props: Params) {
+  const params = await props.params;
   try {
-    const params = await props.params;
     await connectDB();
     const body = await request.json();
     
@@ -71,8 +71,8 @@ export async function PATCH(request: NextRequest, props: Params) {
 
 // DELETE /api/notices/[id]
 export async function DELETE(request: NextRequest, props: Params) {
+  const params = await props.params;
   try {
-    const params = await props.params;
     await connectDB();
     
     const deletedNotice = await Notice.findByIdAndDelete(params.id);

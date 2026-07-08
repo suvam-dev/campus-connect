@@ -43,8 +43,8 @@ export function verifyClerkWebhook(rawBody: string, signatureHeader?: string | n
           }
           return true;
         }
-      } catch (err) {
-        // continue checking other signatures
+      } catch (err: any) {
+        console.error('Error verifying webhook:', err?.message || err);
       }
     }
     return false;
@@ -63,7 +63,7 @@ export function verifyClerkWebhook(rawBody: string, signatureHeader?: string | n
     const expectedBuf = Buffer.from(expected, 'hex');
     if (incomingBuf.length !== expectedBuf.length) return false;
     return crypto.timingSafeEqual(incomingBuf, expectedBuf);
-  } catch (err) {
+  } catch (err: any) {
     return false;
   }
 }

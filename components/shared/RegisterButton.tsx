@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { registerForEvent } from "@/app/actions/registrationActions";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { QRCodeSVG } from "qrcode.react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { UserCircle2 } from "lucide-react";
@@ -80,9 +80,12 @@ export default function RegisterButton({ eventId, isRegisteredInitial, registrat
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex flex-col sm:flex-col gap-2 mt-6">
-            <Button asChild className="w-full bg-indigo-600 hover:bg-indigo-700 rounded-xl h-11">
-              <Link href="/profile">Complete Profile</Link>
-            </Button>
+            <Link 
+              href="/profile" 
+              className={buttonVariants({ className: "w-full bg-indigo-600 hover:bg-indigo-700 rounded-xl h-11" })}
+            >
+              Complete Profile
+            </Link>
             <Button variant="ghost" className="w-full rounded-xl h-11 text-slate-500 hover:text-slate-900" onClick={() => setError(null)}>
               Maybe Later
             </Button>

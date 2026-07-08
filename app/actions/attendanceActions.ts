@@ -1,10 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, requireAdmin } from "@/lib/auth";
 import Registration from "@/models/Registration";
 import { connectDB } from "@/lib/mongodb";
-import { requireAdmin } from "@/lib/adminAuth";
 
 export async function markAttendance(registrationId: string) {
   try {

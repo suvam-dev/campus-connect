@@ -3,7 +3,7 @@ import { connectDB } from '@/lib/mongodb';
 import Society from '@/models/Society';
 import { DataTable } from '@/components/admin/DataTable';
 import { columns, SocietyRow } from './columns';
-import { Button } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
 
@@ -28,11 +28,9 @@ export default async function SocietiesPage() {
           <h1 className="text-2xl font-bold tracking-tight">Societies</h1>
           <p className="text-muted-foreground">Manage all societies on the platform.</p>
         </div>
-        <Button asChild>
-          <Link href="/super-admin/societies/new">
-            <Plus className="mr-2 h-4 w-4" /> Create Society
-          </Link>
-        </Button>
+        <Link href="/super-admin/societies/new" className={buttonVariants()}>
+          <Plus className="mr-2 h-4 w-4" /> Add Society
+        </Link>
       </div>
 
       <DataTable columns={columns} data={formattedSocieties} searchKey="name" />

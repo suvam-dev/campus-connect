@@ -1,5 +1,5 @@
 import React from "react";
-import { requireAdmin } from "@/lib/adminAuth";
+import { requireAdmin } from "@/lib/auth";
 import { connectDB } from "@/lib/mongodb";
 import Event from "@/models/Event";
 import { notFound } from "next/navigation";

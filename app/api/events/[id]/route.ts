@@ -8,8 +8,8 @@ interface Params {
 
 // GET /api/events/[id]
 export async function GET(request: NextRequest, props: Params) {
+  const params = await props.params;
   try {
-    const params = await props.params;
     await connectDB();
     
     const event = await Event.findById(params.id).lean();
@@ -42,8 +42,8 @@ export async function GET(request: NextRequest, props: Params) {
 
 // PATCH /api/events/[id]
 export async function PATCH(request: NextRequest, props: Params) {
+  const params = await props.params;
   try {
-    const params = await props.params;
     await connectDB();
     const body = await request.json();
     
@@ -71,8 +71,8 @@ export async function PATCH(request: NextRequest, props: Params) {
 
 // DELETE /api/events/[id]
 export async function DELETE(request: NextRequest, props: Params) {
+  const params = await props.params;
   try {
-    const params = await props.params;
     await connectDB();
     
     const deletedEvent = await Event.findByIdAndDelete(params.id);

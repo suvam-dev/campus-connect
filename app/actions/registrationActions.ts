@@ -71,7 +71,7 @@ export async function checkRegistrationStatus(eventId: string) {
     }
     
     return { isRegistered: false };
-  } catch (err) {
+  } catch (err: any) {
     return { isRegistered: false };
   }
 }

@@ -150,7 +150,7 @@ async function main() {
       },
       { upsert: true, new: true }
     );
-  } catch (err) {
+  } catch (err: any) {
     console.warn('Failed to create permission grant', err?.message || err);
   }
 

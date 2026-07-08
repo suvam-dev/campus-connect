@@ -11,7 +11,7 @@ export default async function NewInvitePage() {
   try {
     const authResult = await getCurrentUser();
     user = authResult.dbUser;
-  } catch (err) {
+  } catch (err: any) {
     // Handle unauthenticated
   }
 
