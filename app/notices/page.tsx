@@ -3,18 +3,14 @@ import NoticesClient from './NoticesClient';
 
 // DB calls refactored to REST API
 
+import { getNotices } from "@/lib/services/noticeService";
+
 export default async function NoticesPage() {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
-  
-  let initialNotices = [];
+  let initialNotices: any[] = [];
   try {
-    const res = await fetch(`${baseUrl}/api/notices`, { next: { tags: ['notices'] } });
-    if (res.ok) {
-      initialNotices = await res.json();
-    }
+    initialNotices = await getNotices();
   } catch (error) {
     console.error("Failed to fetch notices:", error);
   }
-
   return <NoticesClient initialNotices={initialNotices} />;
 }

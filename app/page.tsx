@@ -22,15 +22,10 @@ const QUICK_LINKS = [
 ];
 
 export default async function Home() {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
-
-  let dbEvents = [];
-  
-  const revalidateTime = process.env.NODE_ENV === 'development' ? 5 : 900;
-  
+  let dbEvents: any[] = [];
   try {
-    const eventsRes = await fetch(`${baseUrl}/api/events?limit=3`, { next: { revalidate: revalidateTime } });
-    if (eventsRes.ok) dbEvents = await eventsRes.json();
+    const { getEvents } = await import("@/lib/services/eventService");
+    dbEvents = await getEvents(3);
   } catch (error) {
     console.error("Failed to fetch data on home page:", error);
   }
