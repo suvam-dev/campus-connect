@@ -5,99 +5,94 @@ import { requireAdmin } from "@/lib/auth";
 import Event from "@/models/Event";
 import { connectDB } from "@/lib/mongodb";
 import { redirect } from "next/navigation";
+import { createEventSchema, updateEventSchema } from "@/lib/validations";
 
 export async function createEvent(formData: FormData) {
   await requireAdmin();
 
-  const title = formData.get("title") as string;
-  const venue = formData.get("venue") as string;
-  const date = formData.get("date") as string;
-  const time = formData.get("time") as string;
-  const category = formData.get("category") as string;
-  const description = formData.get("description") as string;
-  const image = formData.get("image") as string;
-  const tagsStr = formData.get("tags") as string;
-  const status = formData.get("status") as string || "Published";
-  const capacityStr = formData.get("capacity") as string;
-  const registrationDeadline = formData.get("registrationDeadline") as string;
+  const raw = {
+    title: formData.get("title") as string,
+    venue: formData.get("venue") as string,
+    date: formData.get("date") as string,
+    time: formData.get("time") as string,
+    category: formData.get("category") as string,
+    description: (formData.get("description") as string) || "",
+    image: (formData.get("image") as string) || "",
+    tags: (formData.get("tags") as string)
+      ? (formData.get("tags") as string).split(",").map((t) => t.trim()).filter(Boolean)
+      : [],
+    status: (formData.get("status") as string) || "published",
+    capacity: formData.get("capacity")
+      ? parseInt(formData.get("capacity") as string, 10)
+      : undefined,
+    registrationDeadline: (formData.get("registrationDeadline") as string) || undefined,
+  };
 
-  if (!title || !venue || !date || !time || !category) {
-    throw new Error("Missing required fields");
-  }
-
-  const tags = tagsStr ? tagsStr.split(",").map(t => t.trim()).filter(Boolean) : [];
-  const capacity = capacityStr ? parseInt(capacityStr, 10) : undefined;
+  // Validate with Zod — throws ZodError with details on failure
+  const validated = createEventSchema.parse(raw);
 
   await connectDB();
-  const newEvent = await Event.create({
-    title,
-    venue,
-    date,
-    time,
-    category,
-    description,
-    image,
-    tags,
-    status,
-    capacity,
-    registrationDeadline: registrationDeadline ? new Date(registrationDeadline) : undefined,
+  await Event.create({
+    ...validated,
+    registrationDeadline: validated.registrationDeadline
+      ? new Date(validated.registrationDeadline)
+      : undefined,
   });
 
-  revalidatePath('/');
-  revalidatePath('/events');
-  revalidatePath('/admin/events');
+  revalidatePath("/");
+  revalidatePath("/events");
+  revalidatePath("/admin/events");
 
-  redirect('/admin/events');
+  redirect("/admin/events");
 }
 
 export async function updateEvent(id: string, formData: FormData) {
   await requireAdmin();
 
-  const title = formData.get("title") as string;
-  const venue = formData.get("venue") as string;
-  const date = formData.get("date") as string;
-  const time = formData.get("time") as string;
-  const category = formData.get("category") as string;
-  const description = formData.get("description") as string;
-  const image = formData.get("image") as string;
-  const tagsStr = formData.get("tags") as string;
-  const status = formData.get("status") as string || "Published";
-  const capacityStr = formData.get("capacity") as string;
-  const registrationDeadline = formData.get("registrationDeadline") as string;
+  const raw = {
+    title: formData.get("title") as string,
+    venue: formData.get("venue") as string,
+    date: formData.get("date") as string,
+    time: formData.get("time") as string,
+    category: formData.get("category") as string,
+    description: (formData.get("description") as string) || "",
+    image: (formData.get("image") as string) || "",
+    tags: (formData.get("tags") as string)
+      ? (formData.get("tags") as string).split(",").map((t) => t.trim()).filter(Boolean)
+      : [],
+    status: (formData.get("status") as string) || "published",
+    capacity: formData.get("capacity")
+      ? parseInt(formData.get("capacity") as string, 10)
+      : undefined,
+    registrationDeadline: (formData.get("registrationDeadline") as string) || undefined,
+  };
 
-  const tags = tagsStr ? tagsStr.split(",").map(t => t.trim()).filter(Boolean) : [];
-  const capacity = capacityStr ? parseInt(capacityStr, 10) : undefined;
+  // Validate with Zod
+  const validated = updateEventSchema.parse(raw);
 
   await connectDB();
   await Event.findByIdAndUpdate(id, {
-    title,
-    venue,
-    date,
-    time,
-    category,
-    description,
-    image,
-    tags,
-    status,
-    capacity,
-    registrationDeadline: registrationDeadline ? new Date(registrationDeadline) : undefined,
+    ...validated,
+    registrationDeadline: validated.registrationDeadline
+      ? new Date(validated.registrationDeadline)
+      : undefined,
   });
 
-  revalidatePath('/');
-  revalidatePath('/events');
+  revalidatePath("/");
+  revalidatePath("/events");
   revalidatePath(`/events/${id}`);
-  revalidatePath('/admin/events');
+  revalidatePath("/admin/events");
 
-  redirect('/admin/events');
+  redirect("/admin/events");
 }
 
 export async function deleteEvent(id: string) {
   await requireAdmin();
   await connectDB();
-  
+
   await Event.findByIdAndDelete(id);
-  
-  revalidatePath('/');
-  revalidatePath('/events');
-  revalidatePath('/admin/events');
+
+  revalidatePath("/");
+  revalidatePath("/events");
+  revalidatePath("/admin/events");
 }

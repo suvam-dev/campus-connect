@@ -11,6 +11,7 @@ import {
   Terminal, Theater, Wrench, Mic, BookOpen, Trophy, ArrowRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import type { SerializedEvent } from '@/lib/types';
 
 const FILTER_OPTIONS = [
   { id: 'all', label: 'All Events', icon: null },
@@ -22,30 +23,26 @@ const FILTER_OPTIONS = [
   { id: 'sports', label: 'Sports', icon: <Trophy className="w-4 h-4" /> }
 ];
 
-export default function EventsClient({ initialEvents }: { initialEvents: any[] }) {
+export default function EventsClient({ initialEvents }: { initialEvents: SerializedEvent[] }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentCategory, setCurrentCategory] = useState('all');
 
   const filteredEvents = React.useMemo(() => {
     let result = initialEvents || [];
     if (currentCategory !== 'all') {
-      result = result.filter((e: any) => e.category.toLowerCase() === currentCategory.toLowerCase());
+      result = result.filter((e) => e.category.toLowerCase() === currentCategory.toLowerCase());
     }
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
-      result = result.filter((e: any) => 
+      result = result.filter((e) => 
         e.title.toLowerCase().includes(q) ||
-        e.shortDescription?.toLowerCase().includes(q)
+        e.description?.toLowerCase().includes(q)
       );
     }
     return result;
   }, [initialEvents, currentCategory, searchQuery]);
 
   const events = filteredEvents;
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-  };
 
   const handleCategoryClick = (id: string) => {
     setCurrentCategory(id);
@@ -81,7 +78,7 @@ export default function EventsClient({ initialEvents }: { initialEvents: any[] }
               Find and register for exciting campus events
             </p>
 
-            <form onSubmit={handleSearch} className="flex items-center gap-2 md:gap-3 w-full bg-white p-1.5 md:p-2 rounded-xl md:rounded-2xl shadow-sm border border-slate-200 focus-within:border-indigo-300 focus-within:ring-4 focus-within:ring-indigo-50 transition-all">
+            <form onSubmit={(e) => e.preventDefault()} className="flex items-center gap-2 md:gap-3 w-full bg-white p-1.5 md:p-2 rounded-xl md:rounded-2xl shadow-sm border border-slate-200 focus-within:border-indigo-300 focus-within:ring-4 focus-within:ring-indigo-50 transition-all">
               <Search className="w-5 h-5 text-slate-400 ml-2 md:ml-3 shrink-0" />
               <input 
                 type="text" 
@@ -185,7 +182,7 @@ export default function EventsClient({ initialEvents }: { initialEvents: any[] }
             </div>
           </div>
           
-          <Link href="/dashboard" className="relative z-10 w-full md:w-auto shrink-0">
+          <Link href="/profile" className="relative z-10 w-full md:w-auto shrink-0">
             <Button className="w-full md:w-auto bg-white hover:bg-slate-50 text-indigo-700 font-bold rounded-xl md:rounded-2xl h-12 md:h-14 px-6 md:px-8 flex items-center justify-center gap-2 shadow-sm text-base md:text-lg transition-transform hover:scale-105 active:scale-95">
               View My Registrations <ArrowRight className="w-5 h-5 ml-1" />
             </Button>

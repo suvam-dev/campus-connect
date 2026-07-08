@@ -11,7 +11,7 @@ import { getAuth } from '@clerk/nextjs/server';
 export async function getCurrentUserFromReq(reqOrHeaders: Request | Headers) {
   await connectDB();
 
-  const skip = process.env.CLERK_SKIP_AUTH === 'true';
+  const skip = process.env.CLERK_SKIP_AUTH === 'true' && process.env.NODE_ENV !== 'production';
   if (skip) {
     const su = await User.findOne({ role: 'super_admin' }).lean();
     if (su) return su;
@@ -28,8 +28,9 @@ export async function getCurrentUserFromReq(reqOrHeaders: Request | Headers) {
       const user = await User.findOne({ clerkId: clerkUserId }).lean();
       return user || null;
     }
-  } catch (err: any) {
-    // fall back to header parsing if Request not available or Clerk not configured
+  } catch (err: unknown) {
+    // Log instead of silently swallowing — helps debug auth misconfiguration
+    console.warn('Clerk getAuth fallback:', err instanceof Error ? err.message : err);
   }
 
   // Finally, if headers were passed, try legacy header

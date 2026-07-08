@@ -59,7 +59,16 @@ export async function PATCH(request: NextRequest, props: Params) {
     await connectDB();
     const body = await request.json();
 
-    const updatedNotice = await Notice.findByIdAndUpdate(params.id, body, {
+    // Whitelist allowed fields to prevent mass-assignment
+    const allowedUpdate: Record<string, unknown> = {};
+    const fields = ['title', 'category', 'date', 'description', 'source', 'isUnread', 'tags', 'iconType'] as const;
+    for (const key of fields) {
+      if (body[key] !== undefined) {
+        allowedUpdate[key] = body[key];
+      }
+    }
+
+    const updatedNotice = await Notice.findByIdAndUpdate(params.id, allowedUpdate, {
       new: true,
       runValidators: true,
     });

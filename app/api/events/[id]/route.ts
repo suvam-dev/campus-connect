@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Event from "@/models/Event";
 import { requireAdmin } from "@/lib/adminAuth";
+import { updateEventSchema } from "@/lib/validations";
 
 interface Params {
   params: Promise<{ id: string }>;
@@ -59,7 +60,16 @@ export async function PATCH(request: NextRequest, props: Params) {
     await connectDB();
     const body = await request.json();
 
-    const updatedEvent = await Event.findByIdAndUpdate(params.id, body, {
+    // Validate with Zod (partial — all fields optional for PATCH)
+    const parseResult = updateEventSchema.safeParse(body);
+    if (!parseResult.success) {
+      return NextResponse.json(
+        { error: "Validation failed", details: parseResult.error.flatten().fieldErrors },
+        { status: 400 }
+      );
+    }
+
+    const updatedEvent = await Event.findByIdAndUpdate(params.id, parseResult.data, {
       new: true,
       runValidators: true,
     });
@@ -72,10 +82,11 @@ export async function PATCH(request: NextRequest, props: Params) {
       { message: "Event updated successfully", event: updatedEvent },
       { status: 200 }
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
     console.error(`PATCH /api/events/${params.id} error:`, error);
     return NextResponse.json(
-      { error: "Failed to update event", details: error.message },
+      { error: "Failed to update event", details: message },
       { status: 500 }
     );
   }

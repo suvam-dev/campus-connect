@@ -20,7 +20,7 @@ export type PermissionName =
  * - If a Permission doc exists for (user,society) and includes permission -> allowed
  * - If user is in society.admins and has no explicit Permission doc, allow a default admin set (manage/create/edit/view/export/publish/invite)
  */
-export async function checkPermission(userId: string | any, societyId: string | any, permission: PermissionName) {
+export async function checkPermission(userId: string, societyId: string, permission: PermissionName) {
   await connectDB();
 
   const user = await User.findById(userId).lean();
@@ -50,14 +50,15 @@ export async function checkPermission(userId: string | any, societyId: string | 
       ];
       return defaultAdminPerms.includes(permission);
     }
-  } catch (err: any) {
-    console.warn('RBAC fallback check failed', err?.message || err);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.warn('RBAC fallback check failed', message);
   }
 
   return false;
 }
 
-export async function requirePermission(userId: string | any, societyId: string | any, permission: PermissionName) {
+export async function requirePermission(userId: string, societyId: string, permission: PermissionName) {
   const ok = await checkPermission(userId, societyId, permission);
   if (!ok) throw new Error('forbidden');
   return true;

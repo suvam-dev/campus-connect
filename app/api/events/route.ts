@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { connectDB } from "@/lib/mongodb";
 import Event from "@/models/Event";
 import { requireAdmin } from "@/lib/adminAuth";
+import { createEventSchema } from "@/lib/validations";
 
 // GET /api/events
 export async function GET(request: NextRequest) {
@@ -17,7 +18,7 @@ export async function GET(request: NextRequest) {
     
     const limit = limitParam ? parseInt(limitParam, 10) : 10;
     
-    const filter: any = {};
+    const filter: Record<string, unknown> = { status: 'published' };
     if (q) {
       filter.$or = [
         { title: { $regex: q, $options: 'i' } },
@@ -80,7 +81,16 @@ export async function POST(request: NextRequest) {
     await connectDB();
     const body = await request.json();
 
-    const newEvent = await Event.create(body);
+    // Validate with Zod
+    const parseResult = createEventSchema.safeParse(body);
+    if (!parseResult.success) {
+      return NextResponse.json(
+        { error: "Validation failed", details: parseResult.error.flatten().fieldErrors },
+        { status: 400 }
+      );
+    }
+
+    const newEvent = await Event.create(parseResult.data);
 
     revalidatePath('/');
     revalidatePath('/events');
@@ -89,10 +99,11 @@ export async function POST(request: NextRequest) {
       { message: "Event created successfully", id: newEvent._id },
       { status: 201 }
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
     console.error("POST /api/events error:", error);
     return NextResponse.json(
-      { error: "Failed to create event", details: error.message },
+      { error: "Failed to create event", details: message },
       { status: 500 }
     );
   }

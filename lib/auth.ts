@@ -22,7 +22,7 @@ export class ForbiddenError extends Error {
  * This acts as the single source of truth for authenticated user identity.
  */
 export async function getCurrentUser() {
-  const skip = process.env.CLERK_SKIP_AUTH === 'true';
+  const skip = process.env.CLERK_SKIP_AUTH === 'true' && process.env.NODE_ENV !== 'production';
   
   if (skip) {
     await connectDB();
@@ -56,22 +56,16 @@ export async function getCurrentUser() {
     }
   }
   
-  const isSuperAdmin = email === 'suvam1061@gmail.com';
-  const role = isSuperAdmin ? 'super_admin' : 'student';
-
   if (!dbUser) {
-    // Sync user to DB if not exists
+    // First-time sign-in: create a local DB user with the default 'student' role.
+    // To promote a user to super_admin, update their role directly in the database.
     dbUser = await User.create({
       clerkId: clerkUser.id,
       email: email,
       name: `${clerkUser.firstName ?? ""} ${clerkUser.lastName ?? ""}`.trim(),
       profileImage: clerkUser.imageUrl,
-      role: role,
+      role: 'student',
     });
-  } else if (isSuperAdmin && dbUser.role !== 'super_admin') {
-    // Ensure the role is super_admin for this specific email
-    dbUser.role = 'super_admin';
-    await dbUser.save();
   }
 
   return {

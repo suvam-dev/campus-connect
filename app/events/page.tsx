@@ -1,12 +1,10 @@
 import React from 'react';
 import EventsClient from './EventsClient';
-// DB calls refactored to REST API
-
-
 import { getEvents } from "@/lib/services/eventService";
+import type { SerializedEvent } from "@/lib/types";
 
 export default async function EventsPage() {
-  let initialEvents: any[] = [];
+  let initialEvents: SerializedEvent[] = [];
   try {
     initialEvents = await getEvents();
   } catch (error) {
