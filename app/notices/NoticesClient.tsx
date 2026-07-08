@@ -14,7 +14,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-
 const ICON_MAP: Record<string, any> = {
   AlertCircle,
   Briefcase,
@@ -220,8 +219,9 @@ export default function NoticesClient({ initialNotices }: { initialNotices: any[
                         exit={{ opacity: 0, scale: 0.98 }}
                         transition={{ delay: idx * 0.05, duration: 0.3 }}
                       >
-                        <Card className="border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 rounded-3xl bg-white overflow-hidden group cursor-pointer">
-                          <CardContent className="p-6 md:p-8 flex flex-col md:flex-row gap-6 md:gap-8">
+                        <Link href={`/notices/${notice.id}`} className="block">
+                          <Card className="border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 rounded-3xl bg-white overflow-hidden group cursor-pointer">
+                            <CardContent className="p-6 md:p-8 flex flex-col md:flex-row gap-6 md:gap-8">
                             
                             {/* Left Icon Box */}
                             <div className={`shrink-0 w-24 h-24 rounded-2xl flex items-center justify-center ${style.iconBg}`}>
@@ -266,8 +266,9 @@ export default function NoticesClient({ initialNotices }: { initialNotices: any[
                                 </div>
                               </div>
                             </div>
-                          </CardContent>
-                        </Card>
+                            </CardContent>
+                          </Card>
+                        </Link>
                       </motion.div>
                     );
                   })
