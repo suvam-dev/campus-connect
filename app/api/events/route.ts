@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { connectDB } from "@/lib/mongodb";
 import Event from "@/models/Event";
+import { requireAdmin } from "@/lib/adminAuth";
 
 // GET /api/events
 export async function GET(request: NextRequest) {
@@ -63,18 +64,27 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/events
+// POST /api/events  — admin only
 export async function POST(request: NextRequest) {
+  try {
+    await requireAdmin(request);
+  } catch (err: any) {
+    const msg = err?.message || String(err);
+    if (msg === "unauthenticated") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   try {
     await connectDB();
     const body = await request.json();
-    
+
     const newEvent = await Event.create(body);
-    
-    // On-demand revalidation to update frontend caches instantly
+
     revalidatePath('/');
     revalidatePath('/events');
-    
+
     return NextResponse.json(
       { message: "Event created successfully", id: newEvent._id },
       { status: 201 }

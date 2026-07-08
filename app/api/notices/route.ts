@@ -2,26 +2,25 @@ import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { connectDB } from "@/lib/mongodb";
 import Notice from "@/models/Notice";
+import { requireAdmin } from "@/lib/adminAuth";
 
-// GET /api/notices
+// GET /api/notices  — public
 export async function GET(request: NextRequest) {
   try {
     await connectDB();
-    
-    // Parse query params (e.g., ?limit=3)
+
     const { searchParams } = new URL(request.url);
     const limitParam = searchParams.get("limit");
     const limit = limitParam ? parseInt(limitParam, 10) : 0;
-    
+
     let query = Notice.find({}).sort({ date: -1 });
-    
+
     if (limit > 0) {
       query = query.limit(limit);
     }
-    
+
     const notices = await query.lean();
-    
-    // Serialize Mongoose doc
+
     const serialized = notices.map((n: any) => ({
       id: n._id.toString(),
       title: n.title,
@@ -44,18 +43,27 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/notices
+// POST /api/notices  — admin only
 export async function POST(request: NextRequest) {
+  try {
+    await requireAdmin(request);
+  } catch (err: any) {
+    const msg = err?.message || String(err);
+    if (msg === "unauthenticated") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   try {
     await connectDB();
     const body = await request.json();
-    
+
     const newNotice = await Notice.create(body);
-    
-    // On-demand revalidation to update frontend caches instantly
+
     revalidatePath('/');
     revalidatePath('/notices');
-    
+
     return NextResponse.json(
       { message: "Notice created successfully", id: newNotice._id },
       { status: 201 }

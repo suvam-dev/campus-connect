@@ -1,23 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Event from "@/models/Event";
+import { requireAdmin } from "@/lib/adminAuth";
 
 interface Params {
   params: Promise<{ id: string }>;
 }
 
-// GET /api/events/[id]
+// GET /api/events/[id]  — public
 export async function GET(request: NextRequest, props: Params) {
   const params = await props.params;
   try {
     await connectDB();
-    
+
     const event = await Event.findById(params.id).lean();
-    
+
     if (!event) {
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
-    
+
     const serialized = {
       id: (event as any)._id.toString(),
       title: (event as any).title,
@@ -29,7 +30,7 @@ export async function GET(request: NextRequest, props: Params) {
       description: (event as any).description,
       tags: (event as any).tags || [],
     };
-    
+
     return NextResponse.json(serialized, { status: 200 });
   } catch (error: any) {
     console.error(`GET /api/events/${params.id} error:`, error);
@@ -40,22 +41,33 @@ export async function GET(request: NextRequest, props: Params) {
   }
 }
 
-// PATCH /api/events/[id]
+// PATCH /api/events/[id]  — admin only
 export async function PATCH(request: NextRequest, props: Params) {
   const params = await props.params;
+
+  try {
+    await requireAdmin(request);
+  } catch (err: any) {
+    const msg = err?.message || String(err);
+    if (msg === "unauthenticated") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   try {
     await connectDB();
     const body = await request.json();
-    
+
     const updatedEvent = await Event.findByIdAndUpdate(params.id, body, {
-      new: true, // return the updated document
+      new: true,
       runValidators: true,
     });
-    
+
     if (!updatedEvent) {
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
-    
+
     return NextResponse.json(
       { message: "Event updated successfully", event: updatedEvent },
       { status: 200 }
@@ -69,18 +81,29 @@ export async function PATCH(request: NextRequest, props: Params) {
   }
 }
 
-// DELETE /api/events/[id]
+// DELETE /api/events/[id]  — admin only
 export async function DELETE(request: NextRequest, props: Params) {
   const params = await props.params;
+
+  try {
+    await requireAdmin(request);
+  } catch (err: any) {
+    const msg = err?.message || String(err);
+    if (msg === "unauthenticated") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   try {
     await connectDB();
-    
+
     const deletedEvent = await Event.findByIdAndDelete(params.id);
-    
+
     if (!deletedEvent) {
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
-    
+
     return NextResponse.json(
       { message: "Event deleted successfully" },
       { status: 200 }
