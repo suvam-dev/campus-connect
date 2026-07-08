@@ -23,7 +23,7 @@ interface EventStackProps {
 }
 
 // ─── Constants ───
-const MAX_VISIBLE = 5;
+const MAX_VISIBLE = 3;
 const SWIPE_THRESHOLD = 100;
 const FALLBACK_IMAGE = "/images/event-fallback.svg";
 

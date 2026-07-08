@@ -26,7 +26,7 @@ export function HeroCard({ title, subtitle, description, imageUrl, className }: 
       <div 
         className="absolute inset-0 bg-cover bg-center"
         style={{ 
-          backgroundImage: imageUrl ? `url(${imageUrl})` : 'url(https://upload.wikimedia.org/wikipedia/commons/a/ae/Spring_Fest_IIT_Kharagpur_-_Jim_Ankan_Deka_photography.jpg)',
+          backgroundImage: imageUrl ? `url(${imageUrl})` : 'url(/images/event-fallback.svg)',
           backgroundColor: '#0f172a'
         }}
       />

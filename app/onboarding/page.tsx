@@ -3,7 +3,7 @@ import { getCurrentUser } from "@/lib/auth";
 import OnboardingClient from "./OnboardingClient";
 
 export default async function OnboardingPage() {
-  const { dbUser, isNewUser } = await getCurrentUser();
+  const { dbUser } = await getCurrentUser();
 
   if (!dbUser) {
     redirect("/sign-in");

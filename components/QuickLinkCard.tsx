@@ -3,7 +3,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { BookOpen, GraduationCap, Library, Bus, Utensils, Map as MapIcon, Hotel, Users, LucideIcon } from 'lucide-react';
-import { cn } from './lib/utils';
+import { cn } from '@/lib/utils';
 import { Card, CardContent } from './ui/card';
 
 const ICON_MAP: Record<string, LucideIcon> = {

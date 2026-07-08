@@ -131,7 +131,7 @@ export default async function Home() {
             }}
             className="w-full"
           >
-            <CarouselContent className="-ml-4 sm:-ml-6">
+            <CarouselContent className="-ml-4 sm:-ml-6 my-10">
             {events.length > 0 ? (
               events.map((event: any, idx: number) => (
                 <CarouselItem key={event.id} className="pl-4 sm:pl-6 basis-[85%] sm:basis-1/2 lg:basis-1/3">
@@ -140,9 +140,9 @@ export default async function Home() {
                     title={event.title}
                     venue={event.venue}
                     date={event.date}
-                    imageUrl={event.imageUrl || "https://upload.wikimedia.org/wikipedia/commons/0/09/Bubai_manna_21.jpg"}
+                    imageUrl={event.imageUrl}
                     tags={event.tags}
-                    index={idx}
+                   
                     variant="compact"
                   />
                 </CarouselItem>
@@ -155,7 +155,6 @@ export default async function Home() {
                     title="Guest Lecture by Dr. Sarah Chen"
                     venue="Takshashila"
                     date={new Date().toISOString()}
-                    imageUrl="https://upload.wikimedia.org/wikipedia/commons/0/09/Bubai_manna_21.jpg"
                     tags={["ROBOTICS", "HEALTHCARE"]}
                     index={0}
                     variant="compact"
@@ -166,7 +165,6 @@ export default async function Home() {
                     title="Hackathon 2026: Code Innovation"
                     venue="Nalanda Complex"
                     date={new Date(Date.now() + 86400000).toISOString()}
-                    imageUrl="https://upload.wikimedia.org/wikipedia/commons/2/2e/Entrance_Gate_of_IIT_Kharagpur.jpg"
                     tags={["HACKATHON", "CODING"]}
                     index={1}
                     variant="compact"
@@ -177,7 +175,6 @@ export default async function Home() {
                     title="Photography Walk"
                     venue="Central Campus"
                     date={new Date(Date.now() + 86400000 * 3).toISOString()}
-                    imageUrl="https://upload.wikimedia.org/wikipedia/commons/e/eb/IIT_Main_Building_1955.jpg"
                     tags={["PHOTOGRAPHY", "CREATIVE"]}
                     index={2}
                     variant="compact"
