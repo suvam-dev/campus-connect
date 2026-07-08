@@ -1,9 +1,11 @@
 import React from 'react';
 import NoticesClient from './NoticesClient';
+
+export const dynamic = "force-dynamic";
 // DB calls refactored to REST API
 
 export default async function NoticesPage() {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
   
   let initialNotices = [];
   try {

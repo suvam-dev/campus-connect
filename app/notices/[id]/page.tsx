@@ -2,13 +2,15 @@ import React from 'react';
 import { notFound } from 'next/navigation';
 import NoticeDetailClient from './NoticeDetailClient';
 
+export const dynamic = "force-dynamic";
+
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
 export default async function NoticeDetailPage(props: PageProps) {
   const params = await props.params;
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
   
   let notice = null;
   

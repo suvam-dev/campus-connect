@@ -5,7 +5,7 @@ import EventsClient from './EventsClient';
 export const dynamic = 'force-dynamic';
 
 export default async function EventsPage({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
   
   let initialEvents = [];
   try {

@@ -9,6 +9,8 @@ import { BookOpen, Trophy, Cpu, ChevronRight, Calendar as CalendarIcon } from 'l
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
+export const dynamic = "force-dynamic";
+
 const QUICK_LINKS = [
   { id: 1, title: "ERP", iconName: "BookOpen" },
   { id: 2, title: "Courses", iconName: "GraduationCap" },
@@ -21,7 +23,7 @@ const QUICK_LINKS = [
 ];
 
 export default async function Home() {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
 
   let dbEvents = [];
   
