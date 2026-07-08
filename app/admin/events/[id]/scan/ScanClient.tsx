@@ -45,7 +45,7 @@ export default function ScanClient({ eventId }: { eventId: string }) {
               handleScan(detectedCodes[0].rawValue);
             }
           }}
-          onError={(err: any) => console.error(err)}
+          onError={(err: unknown) => console.error(err)}
           formats={["qr_code"]}
 
         />

@@ -7,23 +7,32 @@ import { Building2, CalendarDays, Users } from 'lucide-react';
 import Link from 'next/link';
 import { buttonVariants } from '@/components/ui/button';
 
+import type { DbUser } from '@/lib/types';
+
 export default async function AdminPage() {
   await connectDB();
   
-  let user: any = null;
+  let user: DbUser | null = null;
   try {
     const authData = await getCurrentUser();
     if (authData) user = authData.dbUser;
-  } catch (err: any) {
+  } catch (err: unknown) {
     // Not signed in
   }
 
-  let societies: any[] = [];
+  interface SocietyDoc {
+    _id: { toString(): string };
+    name: string;
+    slug: string;
+    description?: string;
+  }
+
+  let societies: SocietyDoc[] = [];
   if (user && user.role === 'super_admin') {
-    societies = await Society.find({}).lean();
+    societies = await Society.find({}).lean() as unknown as SocietyDoc[];
   } else if (user) {
-    const ids = (user.societies || []).map((x: any) => x.toString());
-    societies = await Society.find({ $or: [{ _id: { $in: ids } }, { members: user._id }, { admins: user._id }] }).lean();
+    const ids = (user.societies || []).map((x: { toString(): string }) => x.toString());
+    societies = await Society.find({ $or: [{ _id: { $in: ids } }, { members: user._id }, { admins: user._id }] }).lean() as unknown as SocietyDoc[];
   }
 
   return (

@@ -7,7 +7,7 @@ import { PageLayout } from '@/components/layouts';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { useForm } from 'react-hook-form';
+import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Loader2, ArrowRight } from 'lucide-react';
@@ -26,14 +26,27 @@ const profileSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
-export default function OnboardingClient({ initialProfile }: { initialProfile: any }) {
+export interface InitialProfile {
+  name: string;
+  email: string;
+  phone: string;
+  collegeEmail: string;
+  rollNumber: string;
+  hall: string;
+  department: string;
+  year: string;
+  profileImage: string;
+  gender: string;
+}
+
+export default function OnboardingClient({ initialProfile }: { initialProfile: InitialProfile }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      gender: initialProfile.gender || "Prefer not to say",
+      gender: (initialProfile.gender as "Male" | "Female" | "Other" | "Prefer not to say") || "Prefer not to say",
       phone: initialProfile.phone || "",
       collegeEmail: initialProfile.collegeEmail || "",
       rollNumber: initialProfile.rollNumber || "",
@@ -41,7 +54,7 @@ export default function OnboardingClient({ initialProfile }: { initialProfile: a
     },
   });
 
-  const onSubmit = (data: ProfileFormValues) => {
+  const onSubmit: SubmitHandler<ProfileFormValues> = (data) => {
     startTransition(async () => {
       const result = await updateProfile(data);
       if (result.success) {
@@ -60,7 +73,7 @@ export default function OnboardingClient({ initialProfile }: { initialProfile: a
           Welcome to Campus Connect!
         </h2>
         <p className="mt-2 text-sm text-slate-600 font-medium">
-          Let's set up your profile before you start exploring events.
+          Let&apos;s set up your profile before you start exploring events.
         </p>
       </div>
 

@@ -12,16 +12,17 @@ import {
 import { HeroCard } from '@/components/HeroCard';
 
 export function HeroCarousel() {
-  const plugin = React.useRef(
-    Autoplay({ delay: 5000, stopOnInteraction: true })
+  const autoplay = React.useMemo(
+    () => Autoplay({ delay: 5000, stopOnInteraction: true }),
+    []
   );
 
   return (
     <Carousel
-      plugins={[plugin.current]}
+      plugins={[autoplay]}
       className="w-full relative"
-      onMouseEnter={plugin.current.stop}
-      onMouseLeave={plugin.current.reset}
+      onMouseEnter={() => autoplay.stop()}
+      onMouseLeave={() => autoplay.reset()}
     >
       <CarouselContent>
         <CarouselItem>

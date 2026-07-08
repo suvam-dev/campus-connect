@@ -2,6 +2,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import { connectDB } from "./mongodb";
 import User from "../models/User";
 import { checkPermission, PermissionName } from "./rbac";
+import type { AuthUser, DbUser } from "./types";
 
 export class UnauthorizedError extends Error {
   constructor(message = "Unauthorized") {
@@ -21,19 +22,24 @@ export class ForbiddenError extends Error {
  * Wraps Clerk's currentUser and fetches the local MongoDB User.
  * This acts as the single source of truth for authenticated user identity.
  */
-export async function getCurrentUser() {
+export async function getCurrentUser(): Promise<AuthUser> {
   const skip = process.env.CLERK_SKIP_AUTH === 'true' && process.env.NODE_ENV !== 'production';
   
   if (skip) {
     await connectDB();
     const su = await User.findOne({ role: 'super_admin' }).lean();
     if (su) {
+      // Cast the MongoDB _id field safely to string
+      const suObj = {
+        ...su,
+        _id: su._id.toString(),
+      } as unknown as DbUser;
       return {
         id: su.clerkId || 'local_admin_id',
         email: su.email,
         name: su.name || 'Super Admin',
         image: su.profileImage,
-        dbUser: su
+        dbUser: suObj
       };
     }
   }
@@ -68,19 +74,25 @@ export async function getCurrentUser() {
     });
   }
 
+  const dbUserObj = dbUser.toObject ? dbUser.toObject() : dbUser;
+  const formattedDbUser = {
+    ...dbUserObj,
+    _id: dbUserObj._id.toString(),
+  } as unknown as DbUser;
+
   return {
     id: clerkUser.id,
     email: email,
     name: `${clerkUser.firstName ?? ""} ${clerkUser.lastName ?? ""}`.trim(),
     image: clerkUser.imageUrl,
-    dbUser: dbUser.toObject ? dbUser.toObject() : dbUser, // local MongoDB user for RBAC
+    dbUser: formattedDbUser,
   };
 }
 
 /**
  * Requires a super_admin role, OR optionally a specific society permission.
  */
-export async function requireAdmin(societyId?: string, permission?: PermissionName) {
+export async function requireAdmin(societyId?: string, permission?: PermissionName): Promise<AuthUser> {
   const user = await getCurrentUser();
   
   if (!user.dbUser) {
@@ -107,7 +119,7 @@ export async function requireAdmin(societyId?: string, permission?: PermissionNa
 /**
  * General role requirement helper.
  */
-export async function requireRole(allowedRoles: string[]) {
+export async function requireRole(allowedRoles: string[]): Promise<AuthUser> {
   const user = await getCurrentUser();
   if (!user.dbUser || !allowedRoles.includes(user.dbUser.role)) {
     throw new ForbiddenError(`Requires one of roles: ${allowedRoles.join(', ')}`);

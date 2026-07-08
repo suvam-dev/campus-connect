@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import { motion, useMotionValue } from "framer-motion";
+import { motion, useMotionValue, PanInfo } from "framer-motion";
 import { CategoryBadge } from "./CategoryBadge";
 import { ProgressIndicator } from "./ProgressIndicator";
 import { EventMeta } from "./EventMeta";
@@ -74,7 +74,7 @@ export const SwipeCard = React.memo(
       [zIndex]
     );
 
-    const handleDragEnd = (_e: any, info: any) => {
+    const handleDragEnd = (_e: unknown, info: PanInfo) => {
       const offset = info.offset.x;
       const velocity = info.velocity.x;
 

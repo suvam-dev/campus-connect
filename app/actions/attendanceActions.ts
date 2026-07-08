@@ -5,6 +5,19 @@ import { getCurrentUser, requireAdmin } from "@/lib/auth";
 import Registration from "@/models/Registration";
 import { connectDB } from "@/lib/mongodb";
 
+interface RegistrationUser {
+  _id: { toString(): string };
+  name: string;
+  email: string;
+}
+
+interface PopulatedRegistration {
+  _id: { toString(): string };
+  event: { toString(): string };
+  checkedIn: boolean;
+  user: RegistrationUser;
+}
+
 export async function markAttendance(registrationId: string) {
   try {
     const { dbUser } = await getCurrentUser();
@@ -14,7 +27,7 @@ export async function markAttendance(registrationId: string) {
 
     await connectDB();
 
-    const registration = await Registration.findById(registrationId).populate("user").lean();
+    const registration = (await Registration.findById(registrationId).populate("user").lean()) as unknown as PopulatedRegistration | null;
     
     if (!registration) {
       return { success: false, error: "Registration not found." };
@@ -32,17 +45,18 @@ export async function markAttendance(registrationId: string) {
       }
     });
 
-    revalidatePath(`/admin/events/${(registration as any).event}/scan`);
+    revalidatePath(`/admin/events/${registration.event.toString()}/scan`);
     
     return { 
       success: true, 
       user: {
-        name: (registration.user as any).name,
-        email: (registration.user as any).email,
+        name: registration.user.name,
+        email: registration.user.email,
       }
     };
     
-  } catch (error: any) {
-    return { success: false, error: error.message || "An unexpected error occurred." };
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "An unexpected error occurred.";
+    return { success: false, error: message };
   }
 }

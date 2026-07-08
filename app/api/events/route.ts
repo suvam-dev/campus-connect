@@ -43,23 +43,24 @@ export async function GET(request: NextRequest) {
     const events = await query.lean();
     
     // Serialize Mongoose doc
-    const serialized = events.map((e: any) => ({
-      id: e._id.toString(),
-      title: e.title,
-      venue: e.venue,
-      date: e.date,
-      time: e.time,
-      category: e.category,
-      image: e.image,
-      description: e.description,
-      tags: e.tags || [],
+    const serialized = events.map((e) => ({
+      id: (e._id as { toString(): string }).toString(),
+      title: e.title as string,
+      venue: e.venue as string,
+      date: e.date as string,
+      time: e.time as string,
+      category: e.category as string,
+      image: e.image as string | undefined,
+      description: e.description as string | undefined,
+      tags: (e.tags || []) as string[],
     }));
 
     return NextResponse.json(serialized, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
     console.error("GET /api/events error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch events", details: error.message },
+      { error: "Failed to fetch events", details: message },
       { status: 500 }
     );
   }
@@ -69,8 +70,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     await requireAdmin(request);
-  } catch (err: any) {
-    const msg = err?.message || String(err);
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
     if (msg === "unauthenticated") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

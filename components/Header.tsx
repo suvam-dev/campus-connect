@@ -41,7 +41,12 @@ export function Header() {
   }, [open]);
 
   // Close on route change
-  React.useEffect(() => { setOpen(false); }, [pathname]);
+  React.useEffect(() => {
+    if (open) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setOpen(false);
+    }
+  }, [pathname, open]);
 
   // Close on Escape key
   React.useEffect(() => {

@@ -4,6 +4,8 @@ import { connectDB } from "@/lib/mongodb";
 import Notice from "@/models/Notice";
 import { requireAdmin } from "@/lib/adminAuth";
 
+import { createNoticeSchema } from "@/lib/validations";
+
 // GET /api/notices  — public
 export async function GET(request: NextRequest) {
   try {
@@ -21,23 +23,24 @@ export async function GET(request: NextRequest) {
 
     const notices = await query.lean();
 
-    const serialized = notices.map((n: any) => ({
-      id: n._id.toString(),
-      title: n.title,
-      category: n.category,
-      date: n.date,
-      description: n.description,
-      source: n.source,
-      isUnread: n.isUnread,
-      iconType: n.iconType,
-      tags: n.tags || [],
+    const serialized = notices.map((n) => ({
+      id: (n._id as { toString(): string }).toString(),
+      title: n.title as string,
+      category: n.category as string,
+      date: n.date as string,
+      description: n.description as string,
+      source: n.source as string,
+      isUnread: (n.isUnread || false) as boolean,
+      iconType: n.iconType as string,
+      tags: (n.tags || []) as string[],
     }));
 
     return NextResponse.json(serialized, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
     console.error("GET /api/notices error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch notices", details: error.message },
+      { error: "Failed to fetch notices", details: message },
       { status: 500 }
     );
   }
@@ -47,8 +50,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     await requireAdmin(request);
-  } catch (err: any) {
-    const msg = err?.message || String(err);
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
     if (msg === "unauthenticated") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -59,7 +62,16 @@ export async function POST(request: NextRequest) {
     await connectDB();
     const body = await request.json();
 
-    const newNotice = await Notice.create(body);
+    // Validate with Zod
+    const parseResult = createNoticeSchema.safeParse(body);
+    if (!parseResult.success) {
+      return NextResponse.json(
+        { error: "Validation failed", details: parseResult.error.flatten().fieldErrors },
+        { status: 400 }
+      );
+    }
+
+    const newNotice = await Notice.create(parseResult.data);
 
     revalidatePath('/');
     revalidatePath('/notices');
@@ -68,10 +80,11 @@ export async function POST(request: NextRequest) {
       { message: "Notice created successfully", id: newNotice._id },
       { status: 201 }
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
     console.error("POST /api/notices error:", error);
     return NextResponse.json(
-      { error: "Failed to create notice", details: error.message },
+      { error: "Failed to create notice", details: message },
       { status: 500 }
     );
   }

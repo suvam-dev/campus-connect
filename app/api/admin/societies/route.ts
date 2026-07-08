@@ -16,7 +16,7 @@ export async function GET(req: Request) {
 
     // For non-super users, return societies where user is admin or member
     if (user) {
-      const ids = (user.societies || []).map((x: any) => x.toString());
+      const ids = (user.societies || []).map((x: { toString(): string }) => x.toString());
       const list = await Society.find({ $or: [{ _id: { $in: ids } }, { members: user._id }, { admins: user._id }] }).lean();
       return new Response(JSON.stringify(list), { status: 200 });
     }
@@ -24,7 +24,8 @@ export async function GET(req: Request) {
     // Public read (no user) - return basic society list
     const publicList = await Society.find({}, { name: 1, slug: 1, description: 1 }).lean();
     return new Response(JSON.stringify(publicList), { status: 200 });
-  } catch (err: any) {
-    return new Response(String(err?.message || err), { status: 500 });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    return new Response(message, { status: 500 });
   }
 }

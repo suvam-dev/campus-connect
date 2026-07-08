@@ -13,10 +13,44 @@ export async function POST(req: Request) {
     return new Response('invalid signature', { status: 401 });
   }
 
-  let payload: any;
+  interface WebhookData {
+    id?: string;
+    user_id?: string;
+    email?: string;
+    email_address?: string;
+    primary_email_address?: string;
+    email_addresses?: Array<{ email_address: string }>;
+    name?: string;
+    first_name?: string;
+    last_name?: string;
+    profile_image_url?: string;
+    avatar_url?: string;
+    phone?: string;
+    phone_number?: string;
+    user?: {
+      id?: string;
+      email_addresses?: Array<{ email_address: string }>;
+      primary_email_address?: string;
+      first_name?: string;
+      last_name?: string;
+      profile_image_url?: string;
+      phone_number?: string;
+    };
+  }
+
+  interface WebhookPayload {
+    type?: string;
+    event?: string;
+    name?: string;
+    data?: WebhookData;
+    user?: WebhookData;
+    object?: WebhookData;
+  }
+
+  let payload: WebhookPayload & WebhookData;
   try {
-    payload = JSON.parse(raw);
-  } catch (err: any) {
+    payload = JSON.parse(raw) as WebhookPayload & WebhookData;
+  } catch (err: unknown) {
     return new Response('invalid json', { status: 400 });
   }
 
@@ -45,11 +79,19 @@ export async function POST(req: Request) {
   try {
     const sdk = detectClerkSDK();
     console.log('Detected Clerk SDK:', sdk);
-    const user = await upsertClerkUser({ clerkId, email, name, phone, profileImage });
+    // Explicitly type the argument passed to upsertClerkUser to avoid implicit any/unmatched type issues
+    const user = await upsertClerkUser({
+      clerkId: clerkId || undefined,
+      email: email || undefined,
+      name: name || undefined,
+      phone: phone || undefined,
+      profileImage: profileImage || undefined,
+    });
     console.log('Clerk webhook processed:', { eventType, clerkId, email, userId: user?._id });
     return new Response('ok');
-  } catch (err: any) {
-    console.error('Error handling Clerk webhook:', err?.message || err);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error('Error handling Clerk webhook:', message);
     return new Response('internal error', { status: 500 });
   }
 }

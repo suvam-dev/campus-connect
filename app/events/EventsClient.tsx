@@ -177,7 +177,7 @@ export default function EventsClient({ initialEvents }: { initialEvents: Seriali
               <Calendar className="w-6 h-6 md:w-20 md:h-20 text-white" />
             </div>
             <div >
-              <h3 className="text-xl md:text-3xl font-black text-white mb-1 md:mb-4 tracking-tight">Don't miss out on amazing events!</h3>
+              <h3 className="text-xl md:text-3xl font-black text-white mb-1 md:mb-4 tracking-tight">Don&apos;t miss out on amazing events!</h3>
               <p className="text-indigo-100 font-medium text-sm md:text-lg">Register early and be a part of unforgettable experiences.</p>
             </div>
           </div>

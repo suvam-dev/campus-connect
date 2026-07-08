@@ -10,12 +10,14 @@ import { motion } from 'framer-motion';
 import RegisterButton from '@/components/shared/RegisterButton';
 import RichTextRenderer from '@/components/shared/RichTextRenderer';
 
+import type { SerializedEvent } from '@/lib/types';
+
 export default function EventDetailClient({ 
   event, 
   isRegisteredInitial = false,
   registrationIdInitial
 }: { 
-  event: any, 
+  event: SerializedEvent, 
   isRegisteredInitial?: boolean,
   registrationIdInitial?: string
 }) {
@@ -74,7 +76,7 @@ export default function EventDetailClient({
             >
               <h2 className="text-2xl font-bold text-slate-900 mb-4">About this Event</h2>
               <div className="mb-8">
-                <RichTextRenderer content={event.description} />
+                <RichTextRenderer content={event.description || ''} />
               </div>
               
               <h3 className="text-xl font-bold text-slate-900 mb-4 mt-8">Tags & Topics</h3>

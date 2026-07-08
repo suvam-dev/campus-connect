@@ -4,23 +4,31 @@ import { connectDB } from "@/lib/mongodb";
 import Society from "@/models/Society";
 import { getCurrentUser } from "@/lib/auth";
 
+import type { DbUser } from "@/lib/types";
+
+interface SocietyDoc {
+  _id: { toString(): string };
+  name: string;
+  slug: string;
+}
+
 export default async function NewInvitePage() {
   await connectDB();
   
-  let user: any = null;
+  let user: DbUser | null = null;
   try {
     const authResult = await getCurrentUser();
     user = authResult.dbUser;
-  } catch (err: any) {
+  } catch (err: unknown) {
     // Handle unauthenticated
   }
 
-  let societies: any[] = [];
+  let societies: SocietyDoc[] = [];
   if (user && user.role === 'super_admin') {
-    societies = await Society.find({}).lean();
+    societies = await Society.find({}).lean() as unknown as SocietyDoc[];
   } else if (user) {
-    const ids = (user.societies || []).map((x: any) => x.toString());
-    societies = await Society.find({ $or: [{ _id: { $in: ids } }, { members: user._id }, { admins: user._id }] }).lean();
+    const ids = (user.societies || []).map((x: { toString(): string }) => x.toString());
+    societies = await Society.find({ $or: [{ _id: { $in: ids } }, { members: user._id }, { admins: user._id }] }).lean() as unknown as SocietyDoc[];
   }
 
   return (

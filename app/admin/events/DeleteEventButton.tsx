@@ -16,7 +16,7 @@ export default function DeleteEventButton({ eventId }: { eventId: string }) {
     setLoading(true);
     try {
       await deleteEvent(eventId);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
       alert("Failed to delete event.");
     } finally {

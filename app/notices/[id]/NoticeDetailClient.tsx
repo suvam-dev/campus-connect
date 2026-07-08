@@ -18,7 +18,9 @@ const CATEGORY_COLORS: Record<string, string> = {
   'Sports': 'bg-red-100 text-red-700 border-red-200',
 };
 
-const ICON_MAP: Record<string, any> = {
+import type { SerializedNotice } from '@/lib/types';
+
+const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   AlertCircle,
   Briefcase,
   Settings,
@@ -29,9 +31,9 @@ const ICON_MAP: Record<string, any> = {
   Library
 };
 
-export default function NoticeDetailClient({ notice }: { notice: any }) {
+export default function NoticeDetailClient({ notice }: { notice: SerializedNotice }) {
   const [isAcknowledged, setIsAcknowledged] = useState(false);
-  const Icon = ICON_MAP[notice.iconType] || FileText;
+  const Icon = (notice.iconType ? ICON_MAP[notice.iconType] : null) || FileText;
   const badgeColor = CATEGORY_COLORS[notice.category] || 'bg-slate-100 text-slate-700 border-slate-200';
 
   const handleAcknowledge = () => {

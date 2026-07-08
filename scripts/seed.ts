@@ -6,12 +6,29 @@ import Event from '../models/Event';
 import Notice from '../models/Notice';
 import Registration from '../models/Registration';
 import Invite from '../models/Invite';
+import Permission from '../models/Permission';
 
-async function upsertSociety(slug: string, data: any) {
+interface SocietyData {
+  name: string;
+  description: string;
+  slug: string;
+}
+
+interface UserData {
+  clerkId: string;
+  name: string;
+  email: string;
+  role: string;
+  year?: string;
+  department?: string;
+  isActive?: boolean;
+}
+
+async function upsertSociety(slug: string, data: SocietyData) {
   return Society.findOneAndUpdate({ slug }, { $set: data }, { upsert: true, new: true });
 }
 
-async function upsertUser(email: string, data: any) {
+async function upsertUser(email: string, data: UserData) {
   return User.findOneAndUpdate({ email }, { $set: data }, { upsert: true, new: true });
 }
 
@@ -37,6 +54,8 @@ async function main() {
     description: 'Campus photography society',
     slug: 'photography-club',
   });
+
+  console.log('Seeded societies:', gdg?.name, photo?.name);
 
   console.log('Seeding users...');
 
@@ -66,12 +85,18 @@ async function main() {
     department: 'ECE',
   });
 
-  // Attach admins/members
-  ieee.admins = ieee.admins || [];
-  if (!ieee.admins.find((id: any) => id.toString() === (bob._id as any).toString())) ieee.admins.push(bob._id);
-  if (!ieee.members) ieee.members = [];
-  if (!ieee.members.find((id: any) => id.toString() === (alice._id as any).toString())) ieee.members.push(alice._id);
-  await ieee.save();
+  if (ieee && bob && alice) {
+    // Attach admins/members
+    ieee.admins = ieee.admins || [];
+    if (!ieee.admins.find((id: { toString(): string }) => id.toString() === bob._id.toString())) {
+      ieee.admins.push(bob._id);
+    }
+    if (!ieee.members) ieee.members = [];
+    if (!ieee.members.find((id: { toString(): string }) => id.toString() === alice._id.toString())) {
+      ieee.members.push(alice._id);
+    }
+    await ieee.save();
+  }
 
   // Create a sample event using existing Event model
   console.log('Seeding an event...');
@@ -93,13 +118,16 @@ async function main() {
   );
 
   // Create a registration (if not exists)
-  try {
-    await Registration.create({ user: alice._id, event: sampleEvent._id });
-  } catch (err: any) {
-    if (err.code === 11000) {
-      console.log('Registration already exists');
-    } else {
-      console.warn('Registration error:', err.message || err);
+  if (alice && sampleEvent) {
+    try {
+      await Registration.create({ user: alice._id, event: sampleEvent._id });
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      if (errMsg.includes('11000')) {
+        console.log('Registration already exists');
+      } else {
+        console.warn('Registration error:', errMsg);
+      }
     }
   }
 
@@ -119,46 +147,50 @@ async function main() {
   );
 
   // Seed an invite example
-  const token = `invite_${Date.now().toString(36)}`;
-  await Invite.findOneAndUpdate(
-    { email: 'newadmin@ieee.org', society: ieee._id },
-    {
-      $set: {
-        email: 'newadmin@ieee.org',
-        society: ieee._id,
-        role: 'society_admin',
-        token,
-        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), // 7 days
-        invitedBy: superAdmin._id,
-      },
-    },
-    { upsert: true, new: true }
-  );
-
-  // Create an example Permission grant for Bob (society admin)
-  const Permission = require('../models/Permission').default;
-  try {
-    await Permission.findOneAndUpdate(
-      { user: bob._id, society: ieee._id },
+  if (ieee && superAdmin) {
+    const inviteToken = `invite_${Date.now().toString(36)}`;
+    await Invite.findOneAndUpdate(
+      { email: 'newadmin@ieee.org', society: ieee._id },
       {
         $set: {
-          user: bob._id,
+          email: 'newadmin@ieee.org',
           society: ieee._id,
-          permissions: ['canCreateEvent', 'canEditEvent', 'canViewRegistrations', 'canExportCSV', 'canInviteAdmins'],
-          createdBy: superAdmin._id,
+          role: 'society_admin',
+          token: inviteToken,
+          expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), // 7 days
+          invitedBy: superAdmin._id,
         },
       },
       { upsert: true, new: true }
     );
-  } catch (err: any) {
-    console.warn('Failed to create permission grant', err?.message || err);
+  }
+
+  // Create an example Permission grant for Bob (society admin)
+  if (bob && ieee && superAdmin) {
+    try {
+      await Permission.findOneAndUpdate(
+        { user: bob._id, society: ieee._id },
+        {
+          $set: {
+            user: bob._id,
+            society: ieee._id,
+            permissions: ['canCreateEvent', 'canEditEvent', 'canViewRegistrations', 'canExportCSV', 'canInviteAdmins'],
+            createdBy: superAdmin._id,
+          },
+        },
+        { upsert: true, new: true }
+      );
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      console.warn('Failed to create permission grant', errMsg);
+    }
   }
 
   console.log('Seeding complete.');
   process.exit(0);
 }
 
-main().catch((err) => {
+main().catch((err: unknown) => {
   console.error('Seed failed', err);
   process.exit(1);
 });

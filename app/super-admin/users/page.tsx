@@ -7,10 +7,18 @@ import { columns, UserRow } from './columns';
 export default async function UsersPage() {
   await connectDB();
   
+  interface MongooseUserLean {
+    _id: { toString(): string };
+    name?: string;
+    email: string;
+    role: 'student' | 'society_admin' | 'super_admin';
+    createdAt?: Date;
+  }
+
   // Fetch users and map to clean object (lean)
-  const users = await User.find({}).sort({ createdAt: -1 }).lean();
+  const users = (await User.find({}).sort({ createdAt: -1 }).lean()) as unknown as MongooseUserLean[];
   
-  const formattedUsers: UserRow[] = users.map((u: any) => ({
+  const formattedUsers: UserRow[] = users.map((u) => ({
     _id: u._id.toString(),
     name: u.name || "Unknown",
     email: u.email,

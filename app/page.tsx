@@ -16,6 +16,17 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel"
 
+import type { SerializedEvent } from '@/lib/types';
+
+interface PageEvent {
+  id: string;
+  title: string;
+  venue: string;
+  date: string;
+  imageUrl?: string;
+  tags: string[];
+}
+
 const QUICK_LINKS = [
   { id: 1, title: "ERP", iconName: "BookOpen" },
   { id: 2, title: "Courses", iconName: "GraduationCap" },
@@ -28,7 +39,7 @@ const QUICK_LINKS = [
 ];
 
 export default async function Home() {
-  let dbEvents: any[] = [];
+  let dbEvents: SerializedEvent[] = [];
   try {
     const { getEvents } = await import("@/lib/services/eventService");
     dbEvents = await getEvents(3);
@@ -36,7 +47,7 @@ export default async function Home() {
     console.error("Failed to fetch data on home page:", error);
   }
 
-  const events = dbEvents.map((e: any) => ({
+  const events: PageEvent[] = dbEvents.map((e) => ({
     id: e.id,
     title: e.title,
     venue: e.venue,
@@ -50,6 +61,8 @@ export default async function Home() {
   const now = new Date();
   const dateStr = now.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   const timeStr = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  const tomorrowStr = new Date(now.getTime() + 86400000).toISOString();
+  const threeDaysLaterStr = new Date(now.getTime() + 86400000 * 3).toISOString();
 
   return (
     <PageLayout className="bg-white">
@@ -133,7 +146,7 @@ export default async function Home() {
           >
             <CarouselContent className="-ml-4 sm:-ml-6 my-10">
             {events.length > 0 ? (
-              events.map((event: any, idx: number) => (
+              events.map((event: PageEvent) => (
                 <CarouselItem key={event.id} className="pl-4 sm:pl-6 basis-[85%] sm:basis-1/2 lg:basis-1/3">
                   <EventCard 
                     id={event.id}
@@ -164,7 +177,7 @@ export default async function Home() {
                   <EventCard 
                     title="Hackathon 2026: Code Innovation"
                     venue="Nalanda Complex"
-                    date={new Date(Date.now() + 86400000).toISOString()}
+                    date={tomorrowStr}
                     tags={["HACKATHON", "CODING"]}
                     index={1}
                     variant="compact"
@@ -174,7 +187,7 @@ export default async function Home() {
                   <EventCard 
                     title="Photography Walk"
                     venue="Central Campus"
-                    date={new Date(Date.now() + 86400000 * 3).toISOString()}
+                    date={threeDaysLaterStr}
                     tags={["PHOTOGRAPHY", "CREATIVE"]}
                     index={2}
                     variant="compact"
@@ -212,7 +225,7 @@ export default async function Home() {
           <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 bg-white opacity-10 rounded-full blur-2xl"></div>
           
           <div className="relative z-10 max-w-2xl mx-auto">
-            <h2 className="text-3xl font-bold tracking-tight mb-4 text-white">Don't miss out on amazing events!</h2>
+            <h2 className="text-3xl font-bold tracking-tight mb-4 text-white">Don&apos;t miss out on amazing events!</h2>
             <p className="text-indigo-100 text-lg mb-8">
               Register early and be a part of unforgettable experiences.
             </p>

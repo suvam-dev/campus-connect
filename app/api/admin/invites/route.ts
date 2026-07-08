@@ -33,8 +33,8 @@ export async function POST(req: Request) {
     );
 
     return new Response(JSON.stringify({ inviteId: invite._id, token: invite.token }), { status: 201 });
-  } catch (err: any) {
-    const message = err?.message || String(err);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
     if (message === 'unauthenticated') return new Response('unauthenticated', { status: 401 });
     if (message === 'forbidden') return new Response('forbidden', { status: 403 });
     return new Response(message, { status: 500 });

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+
 import { generateHTML } from "@tiptap/html";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
@@ -15,18 +15,15 @@ interface RichTextRendererProps {
 }
 
 export default function RichTextRenderer({ content }: RichTextRendererProps) {
-  const html = useMemo(() => {
-    try {
-      if (!content) return "";
-      
-      // If it's not a JSON string (e.g. legacy data), just return it or wrap in p tag
-      if (!content.trim().startsWith("{")) {
-        return `<p>${content}</p>`;
-      }
-
+  let html = "";
+  try {
+    if (!content) {
+      html = "";
+    } else if (!content.trim().startsWith("{")) {
+      html = `<p>${content}</p>`;
+    } else {
       const json = JSON.parse(content);
-      
-      return generateHTML(json, [
+      html = generateHTML(json, [
         StarterKit,
         Link,
         Image,
@@ -35,11 +32,11 @@ export default function RichTextRenderer({ content }: RichTextRendererProps) {
         TableHeader,
         TableCell,
       ]);
-    } catch (e) {
-      console.error("Failed to parse rich text:", e);
-      return `<p>${content}</p>`;
     }
-  }, [content]);
+  } catch (e) {
+    console.error("Failed to parse rich text:", e);
+    html = `<p>${content}</p>`;
+  }
 
   return (
     <div 

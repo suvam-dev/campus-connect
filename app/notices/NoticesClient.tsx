@@ -14,7 +14,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-const ICON_MAP: Record<string, any> = {
+import type { SerializedNotice } from '@/lib/types';
+
+const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   AlertCircle,
   Briefcase,
   Settings,
@@ -36,7 +38,7 @@ const CATEGORIES = [
   { id: 'sports', label: 'Sports', count: 2, icon: Trophy }
 ];
 
-const CATEGORY_STYLES: Record<string, { bg: string, text: string, iconBg: string, iconText: string, icon: any }> = {
+const CATEGORY_STYLES: Record<string, { bg: string, text: string, iconBg: string, iconText: string, icon: React.ComponentType<{ className?: string }> }> = {
   'Academic': { bg: 'bg-indigo-50', text: 'text-indigo-600', iconBg: 'bg-indigo-50', iconText: 'text-indigo-600', icon: BookOpen },
   'Placement': { bg: 'bg-purple-50', text: 'text-purple-600', iconBg: 'bg-purple-50', iconText: 'text-purple-600', icon: Briefcase },
   'Administrative': { bg: 'bg-orange-50', text: 'text-orange-600', iconBg: 'bg-orange-50', iconText: 'text-orange-600', icon: Settings },
@@ -46,8 +48,8 @@ const CATEGORY_STYLES: Record<string, { bg: string, text: string, iconBg: string
   'Sports': { bg: 'bg-red-50', text: 'text-red-500', iconBg: 'bg-red-50', iconText: 'text-red-500', icon: Trophy },
 };
 
-export default function NoticesClient({ initialNotices }: { initialNotices: any[] }) {
-  const [filteredNotices, setFilteredNotices] = useState<any[]>(initialNotices || []);
+export default function NoticesClient({ initialNotices }: { initialNotices: SerializedNotice[] }) {
+  const [filteredNotices, setFilteredNotices] = useState<SerializedNotice[]>(initialNotices || []);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<string>('all');
 
@@ -209,7 +211,7 @@ export default function NoticesClient({ initialNotices }: { initialNotices: any[
                     const style = CATEGORY_STYLES[notice.category] || { 
                       bg: 'bg-slate-50', text: 'text-slate-600', iconBg: 'bg-slate-50', iconText: 'text-slate-600' 
                     };
-                    const Icon = ICON_MAP[notice.iconType] || FileText;
+                    const Icon = (notice.iconType ? ICON_MAP[notice.iconType] : null) || FileText;
 
                     return (
                       <motion.div

@@ -10,9 +10,18 @@ import Link from 'next/link';
 export default async function SocietiesPage() {
   await connectDB();
   
-  const societies = await Society.find({}).sort({ createdAt: -1 }).lean();
+  interface MongooseSocietyLean {
+    _id: { toString(): string };
+    name: string;
+    slug: string;
+    members?: unknown[];
+    admins?: unknown[];
+    createdAt?: Date;
+  }
+
+  const societies = (await Society.find({}).sort({ createdAt: -1 }).lean()) as unknown as MongooseSocietyLean[];
   
-  const formattedSocieties: SocietyRow[] = societies.map((s: any) => ({
+  const formattedSocieties: SocietyRow[] = societies.map((s) => ({
     _id: s._id.toString(),
     name: s.name,
     slug: s.slug,

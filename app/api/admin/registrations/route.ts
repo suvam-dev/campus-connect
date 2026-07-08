@@ -15,8 +15,8 @@ export async function GET(req: Request) {
 
     const regs = await Registration.find({ event: eventId }).populate('user', 'name email rollNumber department year phone').lean();
     return new Response(JSON.stringify(regs), { status: 200 });
-  } catch (err: any) {
-    const message = err?.message || String(err);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
     if (message === 'unauthenticated') return new Response('unauthenticated', { status: 401 });
     if (message === 'forbidden') return new Response('forbidden', { status: 403 });
     return new Response(message, { status: 500 });

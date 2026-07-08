@@ -22,6 +22,7 @@ export const getNotices = unstable_cache(
       source: n.source as string,
       iconType: n.iconType as string,
       isUnread: (n.isUnread || false) as boolean,
+      tags: (n.tags || []) as string[],
     }));
   },
   ['notices-list'],
@@ -47,6 +48,7 @@ export const getNoticeById = unstable_cache(
       source: n.source as string,
       iconType: n.iconType as string,
       isUnread: (n.isUnread || false) as boolean,
+      tags: (n.tags || []) as string[],
     };
   },
   ['notice-detail'],

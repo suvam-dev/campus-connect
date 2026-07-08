@@ -111,10 +111,11 @@ export async function GET() {
       },
       { status: 200 }
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Seeding error:", error);
+    const message = error instanceof Error ? error.message : String(error);
     return NextResponse.json(
-      { error: "Failed to seed database", details: error.message },
+      { error: "Failed to seed database", details: message },
       { status: 500 }
     );
   }

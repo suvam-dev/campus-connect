@@ -26,6 +26,7 @@ export interface SerializedNotice {
   source?: string;
   iconType?: string;
   isUnread: boolean;
+  tags: string[];
 }
 
 /** Authenticated user returned by getCurrentUser() */

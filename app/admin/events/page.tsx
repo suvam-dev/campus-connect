@@ -13,14 +13,41 @@ export default async function AdminEventsPage() {
   await requireAdmin();
   await connectDB();
 
+  interface AdminEventStats {
+    _id: { toString(): string };
+    title: string;
+    date: string;
+    time: string;
+    status: string;
+    regCount: number;
+    capacity?: number;
+  }
+
+  interface MongooseEventLean {
+    _id: { toString(): string };
+    title: string;
+    date: string;
+    time: string;
+    status: string;
+    capacity?: number;
+  }
+
   // Fetch all events
-  const events = await Event.find({}).sort({ date: -1 }).lean();
+  const events = (await Event.find({}).sort({ date: -1 }).lean()) as unknown as MongooseEventLean[];
 
   // Fetch registration counts for each event
-  const eventsWithStats = await Promise.all(
+  const eventsWithStats: AdminEventStats[] = await Promise.all(
     events.map(async (event) => {
       const regCount = await Registration.countDocuments({ event: event._id });
-      return { ...event, regCount };
+      return {
+        _id: event._id,
+        title: event.title,
+        date: event.date,
+        time: event.time,
+        status: event.status,
+        regCount,
+        capacity: event.capacity,
+      };
     })
   );
 
@@ -54,7 +81,7 @@ export default async function AdminEventsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                {eventsWithStats.map((event: any) => (
+                {eventsWithStats.map((event) => (
                   <tr key={event._id.toString()} className="hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors">
                     <td className="px-6 py-4 font-medium text-slate-900 dark:text-slate-100">
                       {event.title}
@@ -116,7 +143,7 @@ export default async function AdminEventsPage() {
 
           {/* Mobile Card Layout */}
           <div className="md:hidden flex flex-col gap-4 p-4">
-            {eventsWithStats.map((event: any) => (
+            {eventsWithStats.map((event) => (
               <div key={event._id.toString()} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm flex flex-col gap-4">
                 <div className="flex justify-between items-start gap-4">
                   <div>

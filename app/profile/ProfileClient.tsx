@@ -25,7 +25,33 @@ const profileSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
-export default function ProfileClient({ initialProfile, stats, registeredEvents = [] }: { initialProfile: Record<string, any>, stats: Record<string, any>, registeredEvents?: any[] }) {
+import type { RegisteredEvent } from '@/lib/types';
+
+interface ProfileProps {
+  initialProfile: {
+    clerkId?: string;
+    name?: string;
+    email: string;
+    profileImage?: string;
+    gender?: string;
+    phone?: string;
+    collegeEmail?: string;
+    rollNumber?: string;
+    department?: string;
+    year?: string;
+    hall?: string;
+    profileCompleted?: boolean;
+  };
+  stats: {
+    eventsRegistered: number;
+    bookmarks: number;
+    certificates: number;
+    attendance: number;
+  };
+  registeredEvents?: RegisteredEvent[];
+}
+
+export default function ProfileClient({ initialProfile, stats, registeredEvents = [] }: ProfileProps) {
   const [isPending, startTransition] = useTransition();
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 

@@ -4,6 +4,18 @@ import Registration from "@/models/Registration";
 import Event from "@/models/Event";
 import { requireAdmin } from "@/lib/auth";
 
+interface PopulatedUser {
+  name?: string;
+  email?: string;
+  role?: string;
+}
+
+interface PopulatedRegistration {
+  user?: PopulatedUser;
+  status?: string;
+  createdAt: Date;
+}
+
 export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
   try {
     await requireAdmin();
@@ -17,16 +29,16 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
       return new NextResponse("Event not found", { status: 404 });
     }
 
-    const registrations = await Registration.find({ event: eventId })
+    const registrations = (await Registration.find({ event: eventId })
       .populate("user", "name email role")
       .sort({ createdAt: -1 })
-      .lean();
+      .lean()) as unknown as PopulatedRegistration[];
 
     // Create CSV header
-    const headers = ["Name", "Email", "Role", "Status", "Registered At"];
+    const csvHeaders = ["Name", "Email", "Role", "Status", "Registered At"];
     
     // Create CSV rows
-    const rows = registrations.map((reg: any) => {
+    const rows = registrations.map((reg) => {
       const user = reg.user || {};
       return [
         `"${(user.name || "").replace(/"/g, '""')}"`,
@@ -37,16 +49,16 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
       ].join(",");
     });
 
-    const csvContent = [headers.join(","), ...rows].join("\n");
+    const csvContent = [csvHeaders.join(","), ...rows].join("\n");
 
     return new NextResponse(csvContent, {
       headers: {
         "Content-Type": "text/csv",
-        "Content-Disposition": `attachment; filename="registrations_${event.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.csv"`
+        "Content-Disposition": `attachment; filename="registrations_${(event.title as string).replace(/[^a-z0-9]/gi, '_').toLowerCase()}.csv"`
       }
     });
 
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Export error:", err);
     return new NextResponse("Internal Server Error", { status: 500 });
   }

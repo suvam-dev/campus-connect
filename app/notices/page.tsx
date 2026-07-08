@@ -1,12 +1,10 @@
 import React from 'react';
 import NoticesClient from './NoticesClient';
-
-// DB calls refactored to REST API
-
 import { getNotices } from "@/lib/services/noticeService";
+import type { SerializedNotice } from "@/lib/types";
 
 export default async function NoticesPage() {
-  let initialNotices: any[] = [];
+  let initialNotices: SerializedNotice[] = [];
   try {
     initialNotices = await getNotices();
   } catch (error) {

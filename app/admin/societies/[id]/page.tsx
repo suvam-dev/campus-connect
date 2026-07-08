@@ -9,6 +9,20 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
 
+interface EventDoc {
+  _id: { toString(): string };
+  title: string;
+  date: string;
+  venue: string;
+}
+
+interface MemberDoc {
+  _id: { toString(): string };
+  name?: string;
+  email: string;
+  role: string;
+}
+
 export default async function SocietyAdminPage({ params }: { params: { id: string } }) {
   await connectDB();
   
@@ -16,8 +30,8 @@ export default async function SocietyAdminPage({ params }: { params: { id: strin
   if (!society) return notFound();
 
   // Fetch related events and members
-  const events = await Event.find({ societyId: society._id }).sort({ date: -1 }).lean();
-  const members = await User.find({ _id: { $in: society.members || [] } }).lean();
+  const events = (await Event.find({ societyId: society._id }).sort({ date: -1 }).lean()) as unknown as EventDoc[];
+  const members = (await User.find({ _id: { $in: society.members || [] } }).lean()) as unknown as MemberDoc[];
 
   return (
     <div className="space-y-6">
@@ -65,7 +79,7 @@ export default async function SocietyAdminPage({ params }: { params: { id: strin
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle>Events</CardTitle>
-            <CardDescription>Recent and upcoming events for this society.</CardDescription>
+            <CardDescription>Upcoming and past events.</CardDescription>
           </CardHeader>
           <CardContent>
             {events.length === 0 ? (
@@ -74,7 +88,7 @@ export default async function SocietyAdminPage({ params }: { params: { id: strin
               </div>
             ) : (
               <div className="space-y-4">
-                {events.map((e: any) => (
+                {events.map((e: EventDoc) => (
                   <div key={e._id.toString()} className="flex justify-between items-center border-b pb-4 last:border-0 last:pb-0">
                     <div>
                       <h4 className="font-semibold">{e.title}</h4>
@@ -105,7 +119,7 @@ export default async function SocietyAdminPage({ params }: { params: { id: strin
                </div>
             ) : (
               <div className="space-y-4">
-                {members.slice(0, 5).map((m: any) => (
+                {members.slice(0, 5).map((m: MemberDoc) => (
                   <div key={m._id.toString()} className="flex items-center justify-between">
                     <div>
                       <h4 className="text-sm font-medium">{m.name || m.email}</h4>

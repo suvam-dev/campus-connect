@@ -10,11 +10,17 @@ export function extractPlainText(content: string): string {
     if (!content) return "";
     if (!content.trim().startsWith("{")) return content; // Not JSON
 
+    interface TiptapNode {
+      type?: string;
+      text?: string;
+      content?: TiptapNode[];
+    }
+
     const json = JSON.parse(content);
     
     // Recursive function to extract text from Tiptap JSON
     let text = "";
-    const extract = (node: any) => {
+    const extract = (node: TiptapNode) => {
       if (node.type === "text" && node.text) {
         text += node.text + " ";
       }
@@ -25,7 +31,7 @@ export function extractPlainText(content: string): string {
     
     extract(json);
     return text.trim();
-  } catch (e) {
+  } catch {
     return content || "";
   }
 }

@@ -21,22 +21,23 @@ export async function GET(request: NextRequest, props: Params) {
     }
 
     const serialized = {
-      id: (event as any)._id.toString(),
-      title: (event as any).title,
-      venue: (event as any).venue,
-      date: (event as any).date,
-      time: (event as any).time,
-      category: (event as any).category,
-      image: (event as any).image,
-      description: (event as any).description,
-      tags: (event as any).tags || [],
+      id: (event._id as { toString(): string }).toString(),
+      title: event.title as string,
+      venue: event.venue as string,
+      date: event.date as string,
+      time: event.time as string,
+      category: event.category as string,
+      image: event.image as string | undefined,
+      description: event.description as string | undefined,
+      tags: (event.tags || []) as string[],
     };
 
     return NextResponse.json(serialized, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
     console.error(`GET /api/events/${params.id} error:`, error);
     return NextResponse.json(
-      { error: "Failed to fetch event", details: error.message },
+      { error: "Failed to fetch event", details: message },
       { status: 500 }
     );
   }
@@ -48,8 +49,8 @@ export async function PATCH(request: NextRequest, props: Params) {
 
   try {
     await requireAdmin(request);
-  } catch (err: any) {
-    const msg = err?.message || String(err);
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
     if (msg === "unauthenticated") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -98,8 +99,8 @@ export async function DELETE(request: NextRequest, props: Params) {
 
   try {
     await requireAdmin(request);
-  } catch (err: any) {
-    const msg = err?.message || String(err);
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
     if (msg === "unauthenticated") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -119,10 +120,11 @@ export async function DELETE(request: NextRequest, props: Params) {
       { message: "Event deleted successfully" },
       { status: 200 }
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
     console.error(`DELETE /api/events/${params.id} error:`, error);
     return NextResponse.json(
-      { error: "Failed to delete event", details: error.message },
+      { error: "Failed to delete event", details: message },
       { status: 500 }
     );
   }

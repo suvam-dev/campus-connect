@@ -13,12 +13,17 @@ export type ClerkProfile = {
   profileImage?: string;
 };
 
-function safeReadPackageJson() {
+interface PackageJson {
+  dependencies?: Record<string, string>;
+  devDependencies?: Record<string, string>;
+}
+
+function safeReadPackageJson(): PackageJson | null {
   try {
     const p = path.resolve(process.cwd(), 'package.json');
     const raw = fs.readFileSync(p, 'utf8');
-    return JSON.parse(raw);
-  } catch (err: any) {
+    return JSON.parse(raw) as PackageJson;
+  } catch {
     return null;
   }
 }
@@ -42,7 +47,41 @@ export function detectClerkSDK() {
   return { flavor: 'unknown', package: name, version: ver };
 }
 
-function normalizeClerkPayload(raw: any): ClerkProfile {
+interface ClerkNestedData {
+  id?: string;
+  user_id?: string;
+  email?: string;
+  email_address?: string;
+  primary_email_address?: string;
+  email_addresses?: Array<{ email_address?: string }>;
+  name?: string;
+  first_name?: string;
+  last_name?: string;
+  profile_image_url?: string;
+  avatar_url?: string;
+  phone?: string;
+  phone_number?: string;
+  user?: {
+    id?: string;
+    email_addresses?: Array<{ email_address?: string }>;
+    primary_email_address?: string;
+    primary_email?: { email?: string };
+    first_name?: string;
+    last_name?: string;
+    name?: string;
+    profile_image_url?: string;
+    image_url?: string;
+    phone_number?: string;
+  };
+}
+
+interface RawClerkPayload {
+  data?: ClerkNestedData;
+  user?: ClerkNestedData;
+  object?: ClerkNestedData;
+}
+
+function normalizeClerkPayload(raw: RawClerkPayload & ClerkNestedData): ClerkProfile {
   if (!raw) return {};
   const data = raw.data || raw.user || raw.object || raw;
 
@@ -76,19 +115,21 @@ function normalizeClerkPayload(raw: any): ClerkProfile {
  * After creating/updating the user, auto-accept any pending Invite matching the user's email (and not expired).
  * If invite.role === 'society_admin', the user is added to the society admins array and given role 'society_admin'.
  */
-export async function upsertClerkUser(profileOrRaw: ClerkProfile | any) {
+export async function upsertClerkUser(profileOrRaw: ClerkProfile | (RawClerkPayload & ClerkNestedData)) {
   await connectDB();
 
-  const profile = (profileOrRaw && (profileOrRaw.clerkId || profileOrRaw.email)) ? profileOrRaw : normalizeClerkPayload(profileOrRaw);
+  const profile = (profileOrRaw && ('clerkId' in profileOrRaw || 'email' in profileOrRaw)) 
+    ? (profileOrRaw as ClerkProfile) 
+    : normalizeClerkPayload(profileOrRaw as RawClerkPayload & ClerkNestedData);
 
-  const { clerkId, email, name, phone, profileImage } = profile as ClerkProfile;
+  const { clerkId, email, name, phone, profileImage } = profile;
 
   // Prefer matching by clerkId, fall back to email
-  const query: any = {};
+  const query: { $or?: Array<{ clerkId?: string; email?: string }>; email?: string } = {};
   if (clerkId) query.$or = [{ clerkId }, { email }];
   else if (email) query.email = email;
 
-  const update: any = {
+  const update: Record<string, unknown> = {
     clerkId: clerkId || undefined,
     email,
     name,
@@ -115,7 +156,7 @@ export async function upsertClerkUser(profileOrRaw: ClerkProfile | any) {
           // Add society to user's societies and add to Society.admins
           if (!user.societies) user.societies = [];
           const sid = invite.society;
-          if (!user.societies.find((x: any) => x.toString() === sid.toString())) user.societies.push(sid);
+          if (!user.societies.find((x: { toString(): string }) => x.toString() === sid.toString())) user.societies.push(sid);
 
           // Update user's role to society_admin if not already elevated
           if (user.role !== 'super_admin') {
@@ -127,31 +168,33 @@ export async function upsertClerkUser(profileOrRaw: ClerkProfile | any) {
             const society = await Society.findById(sid);
             if (society) {
               society.admins = society.admins || [];
-              if (!society.admins.find((id: any) => id.toString() === user._id.toString())) {
+              if (!society.admins.find((id: { toString(): string }) => id.toString() === user._id.toString())) {
                 society.admins.push(user._id);
                 await society.save();
               }
             }
-          } catch (err: any) {
-            console.warn('Failed to attach user to society admins:', err?.message || err);
+          } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : String(err);
+            console.warn('Failed to attach user to society admins:', message);
           }
         } else if (invite.role === 'student') {
           // Add user to society members
           const sid = invite.society;
           if (!user.societies) user.societies = [];
-          if (!user.societies.find((x: any) => x.toString() === sid.toString())) user.societies.push(sid);
+          if (!user.societies.find((x: { toString(): string }) => x.toString() === sid.toString())) user.societies.push(sid);
 
           try {
             const society = await Society.findById(sid);
             if (society) {
               society.members = society.members || [];
-              if (!society.members.find((id: any) => id.toString() === user._id.toString())) {
+              if (!society.members.find((id: { toString(): string }) => id.toString() === user._id.toString())) {
                 society.members.push(user._id);
                 await society.save();
               }
             }
-          } catch (err: any) {
-            console.warn('Failed to attach user to society members:', err?.message || err);
+          } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : String(err);
+            console.warn('Failed to attach user to society members:', message);
           }
         }
 
@@ -161,8 +204,9 @@ export async function upsertClerkUser(profileOrRaw: ClerkProfile | any) {
         console.log('Accepted invite for user', email, 'society', invite.society.toString());
       }
     }
-  } catch (err: any) {
-    console.warn('Invite processing error:', err?.message || err);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.warn('Invite processing error:', message);
   }
 
   return user;
