@@ -36,20 +36,27 @@ export function EventCard({ id, title, venue, date, imageUrl, tags, index = 0, c
   try {
     const d = new Date(date);
     if (!isNaN(d.getTime())) {
-      month = d.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
-      day = d.toLocaleDateString('en-US', { day: '2-digit' });
-      
+      // Use UTC-based formatting to avoid server/client timezone hydration mismatches.
+      // The date string from the DB is typically an ISO string (UTC); formatting with
+      // timeZone: 'UTC' ensures the server (Node, UTC) and browser produce the same output.
+      const utcOpts: Intl.DateTimeFormatOptions = { timeZone: 'UTC' };
+
+      month = d.toLocaleDateString('en-US', { ...utcOpts, month: 'short' }).toUpperCase();
+      day = d.toLocaleDateString('en-US', { ...utcOpts, day: '2-digit' });
+
       const now = new Date();
-      if (d.toDateString() === now.toDateString()) {
-        timeStr = `Today, ${d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
+      const dDate = d.toLocaleDateString('en-US', utcOpts);
+      const todayDate = now.toLocaleDateString('en-US', utcOpts);
+      const tomorrowDate = new Date(now.getTime() + 86_400_000).toLocaleDateString('en-US', utcOpts);
+      const timeFormatted = d.toLocaleTimeString('en-US', { ...utcOpts, hour: 'numeric', minute: '2-digit' });
+
+      if (dDate === todayDate) {
+        timeStr = `Today, ${timeFormatted}`;
+      } else if (dDate === tomorrowDate) {
+        timeStr = `Tomorrow, ${timeFormatted}`;
       } else {
-        const tomorrow = new Date(now);
-        tomorrow.setDate(now.getDate() + 1);
-        if (d.toDateString() === tomorrow.toDateString()) {
-           timeStr = `Tomorrow, ${d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
-        } else {
-           timeStr = `${d.toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}, ${d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
-        }
+        const datePart = d.toLocaleDateString('en-US', { ...utcOpts, day: 'numeric', month: 'short' });
+        timeStr = `${datePart}, ${timeFormatted}`;
       }
     }
   } catch (e) {
