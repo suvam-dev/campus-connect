@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { MapPin, Clock, ArrowRight } from 'lucide-react';
@@ -20,7 +20,14 @@ interface EventCardProps {
   variant?: 'default' | 'compact';
 }
 
+const FALLBACK_IMAGE = '/images/event-fallback.svg';
+
 export function EventCard({ id, title, venue, date, imageUrl, tags, index = 0, className, variant = 'default' }: EventCardProps) {
+  // Treat empty string as missing — always fall back to local SVG
+  const resolvedSrc = imageUrl?.trim() || FALLBACK_IMAGE;
+  const [imgSrc, setImgSrc] = useState<string>(resolvedSrc);
+  const [imgError, setImgError] = useState(false);
+
   let month = "JUL";
   let day = "09";
   let timeStr = date;
@@ -48,9 +55,6 @@ export function EventCard({ id, title, venue, date, imageUrl, tags, index = 0, c
     // fallback
   }
 
-  // Use IIT KGP default image
-  const defaultImage = 'https://upload.wikimedia.org/wikipedia/commons/a/ae/Spring_Fest_IIT_Kharagpur_-_Jim_Ankan_Deka_photography.jpg';
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 15 }}
@@ -62,9 +66,15 @@ export function EventCard({ id, title, venue, date, imageUrl, tags, index = 0, c
         {/* Top Image Section */}
         <div className="relative h-48 w-full bg-slate-100 overflow-hidden shrink-0">
           <img
-            src={imageUrl || defaultImage}
+            src={imgSrc}
             alt={title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+            onError={() => {
+              if (!imgError) {
+                setImgError(true);
+                setImgSrc(FALLBACK_IMAGE);
+              }
+            }}
           />
           
           {/* Date Badge */}
@@ -76,7 +86,9 @@ export function EventCard({ id, title, venue, date, imageUrl, tags, index = 0, c
 
         {/* Content Section */}
         <CardContent className="p-6 flex flex-col flex-grow">
-          <h3 className="font-bold text-[22px] text-slate-900 line-clamp-2 mb-4 leading-snug tracking-tight group-hover:text-[#5235FF] transition-colors">
+          <h3 className={cn("font-bold text-[22px] line-clamp-2 mb-4 leading-snug tracking-tight transition-colors", 
+            variant === 'compact' ? "text-[#5235FF]" : "text-slate-900 group-hover:text-[#5235FF]"
+          )}>
             {title}
           </h3>
           

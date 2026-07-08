@@ -48,9 +48,9 @@ export function QuickLinkCard({ title, iconName, index = 0, className }: QuickLi
       whileTap={{ scale: 0.95 }}
       className="flex flex-col items-center gap-3"
     >
-      <Card className={cn("group cursor-pointer hover:shadow-md transition-all rounded-3xl shadow-sm border border-slate-100 bg-white aspect-square flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24", className)}>
+      <Card className={cn("group cursor-pointer hover:shadow-md transition-all rounded-[1.5rem] shadow-sm border border-slate-100 bg-white aspect-square flex items-center justify-center w-[4.25rem] h-[4.25rem] sm:w-20 sm:h-20 md:w-24 md:h-24", className)}>
         <CardContent className="p-0 flex items-center justify-center w-full h-full">
-          <Icon className={cn("w-8 h-8 sm:w-10 sm:h-10 stroke-[1.5]", colorClass)} />
+          <Icon className={cn("w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 stroke-[1.5]", colorClass)} />
         </CardContent>
       </Card>
       <span className="text-xs font-bold text-slate-700 text-center">

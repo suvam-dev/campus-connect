@@ -20,6 +20,7 @@ const profileSchema = z.object({
   phone: z.string().regex(/^\+91[0-9]{10}$/, "Must be a valid Indian phone number starting with +91 (e.g. +919876543210)"),
   collegeEmail: z.string().email("Invalid email").endsWith("@kgpian.iitkgp.ac.in", "Must be a valid @kgpian.iitkgp.ac.in email"),
   rollNumber: z.string().regex(/^[0-9]{2}[A-Z]{2}[0-9]{5}$/i, "Invalid Roll Number (e.g. 20CS10001)"),
+  hall: z.string().min(1, "Hall of Residence is required"),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -35,6 +36,7 @@ export default function ProfileClient({ initialProfile, stats, registeredEvents 
       phone: (initialProfile.phone as string) || "",
       collegeEmail: (initialProfile.collegeEmail as string) || "",
       rollNumber: (initialProfile.rollNumber as string) || "",
+      hall: (initialProfile.hall as string) || "",
     },
   });
 
@@ -68,6 +70,7 @@ export default function ProfileClient({ initialProfile, stats, registeredEvents 
     <PageLayout className="bg-slate-50/50">
       <div className="max-w-7xl mx-auto w-full pb-12">
         <ListLayout
+          mobileSidebarPosition="top"
           sidebar={
             <div className="space-y-6">
               {/* Profile Card */}
@@ -203,6 +206,19 @@ export default function ProfileClient({ initialProfile, stats, registeredEvents 
                       </div>
 
                       <div className="space-y-2">
+                        <label className="text-sm font-semibold text-slate-700">Hall of Residence</label>
+                        <input 
+                          type="text" 
+                          placeholder="e.g. LLR Hall"
+                          {...form.register('hall')}
+                          className="flex h-11 w-full rounded-xl border border-slate-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-600 focus-visible:border-transparent disabled:cursor-not-allowed disabled:opacity-50"
+                        />
+                        {form.formState.errors.hall && (
+                          <p className="text-xs text-red-500 font-medium">{form.formState.errors.hall.message}</p>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
                         <label className="text-sm font-semibold text-slate-700">Gender</label>
                         <select 
                           {...form.register('gender')}
@@ -225,11 +241,11 @@ export default function ProfileClient({ initialProfile, stats, registeredEvents 
                       </div>
                     )}
 
-                    <div className="flex justify-end pt-4 border-t border-slate-100">
+                    <div className="flex flex-col sm:flex-row sm:justify-end pt-4 border-t border-slate-100 mt-6">
                       <Button 
                         type="submit" 
                         disabled={isPending}
-                        className="bg-slate-900 hover:bg-slate-800 text-white rounded-xl px-6 h-11 font-semibold"
+                        className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white rounded-xl px-6 h-11 font-semibold"
                       >
                         {isPending ? (
                           <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving...</>

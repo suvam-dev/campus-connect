@@ -16,7 +16,7 @@ export default function NewEventPage() {
                  className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border" />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label htmlFor="date" className="block text-sm font-medium text-slate-700">Date (YYYY-MM-DD)</label>
             <input type="text" id="date" name="date" required placeholder="2024-10-15"

@@ -7,6 +7,7 @@ const UserSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true, index: true },
     phone: { type: String },
     rollNumber: { type: String },
+    hall: { type: String, default: null },
     department: { type: String },
     year: { type: String },
     profileImage: { type: String },

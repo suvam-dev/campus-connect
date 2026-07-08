@@ -28,7 +28,7 @@ export default async function EditEventPage({ params }: { params: { id: string }
                  className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border dark:bg-slate-800 dark:border-slate-700 dark:text-white" />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label htmlFor="date" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Date (YYYY-MM-DD)</label>
             <input type="text" id="date" name="date" required defaultValue={event.date}

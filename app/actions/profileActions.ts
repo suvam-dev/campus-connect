@@ -14,6 +14,7 @@ const profileSchema = z.object({
   phone: z.string().regex(/^\+91[0-9]{10}$/, "Must be a valid Indian phone number starting with +91"),
   collegeEmail: z.string().email("Invalid email address").endsWith("@kgpian.iitkgp.ac.in", "Must be a valid @kgpian.iitkgp.ac.in email"),
   rollNumber: z.string().regex(/^[0-9]{2}[A-Z]{2}[0-9]{5}$/i, "Invalid Roll Number format (e.g. 20CS10001)"),
+  hall: z.string().min(1, "Hall of Residence is required"),
 });
 
 export async function getProfile() {
@@ -40,6 +41,7 @@ export async function getProfile() {
         rollNumber: dbUser.rollNumber || "",
         department: dbUser.department || "",
         year: dbUser.year || "",
+        hall: dbUser.hall || "",
         profileCompleted: dbUser.profileCompleted || false,
       },
       stats: {
@@ -60,6 +62,7 @@ export async function updateProfile(data: {
   phone: string;
   collegeEmail: string;
   rollNumber: string;
+  hall: string;
 }) {
   try {
     const { dbUser } = await getCurrentUser();
@@ -111,6 +114,7 @@ export async function updateProfile(data: {
       phone: validatedData.phone,
       collegeEmail: validatedData.collegeEmail,
       rollNumber: upperRollNumber,
+      hall: validatedData.hall,
       department: departmentName,
       year: yearString,
       profileCompleted: true

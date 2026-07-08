@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useAuth, SignInButton } from "@clerk/nextjs";
 import { registerForEvent } from "@/app/actions/registrationActions";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { QRCodeSVG } from "qrcode.react";
@@ -15,6 +16,7 @@ interface RegisterButtonProps {
 }
 
 export default function RegisterButton({ eventId, isRegisteredInitial, registrationIdInitial }: RegisterButtonProps) {
+  const { isSignedIn } = useAuth();
   const [isRegistered, setIsRegistered] = useState(isRegisteredInitial);
   const [registrationId, setRegistrationId] = useState<string | undefined>(registrationIdInitial);
   const [isPending, startTransition] = useTransition();
@@ -58,13 +60,21 @@ export default function RegisterButton({ eventId, isRegisteredInitial, registrat
   return (
     <>
       <div className="flex flex-col gap-2">
-        <Button 
-          onClick={handleRegister} 
-          disabled={isPending}
-          className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700"
-        >
-          {isPending ? "Registering..." : "Register Now"}
-        </Button>
+        {!isSignedIn ? (
+          <SignInButton mode="modal" fallbackRedirectUrl={`/events/${eventId}`}>
+            <Button className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700">
+              Register Now
+            </Button>
+          </SignInButton>
+        ) : (
+          <Button 
+            onClick={handleRegister} 
+            disabled={isPending}
+            className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700"
+          >
+            {isPending ? "Registering..." : "Register Now"}
+          </Button>
+        )}
         {error && error !== "INCOMPLETE_PROFILE" && <span className="text-sm text-red-500">{error}</span>}
       </div>
 

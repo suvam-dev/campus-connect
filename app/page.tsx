@@ -8,7 +8,13 @@ import { currentUser } from "@clerk/nextjs/server";
 import { BookOpen, Trophy, Cpu, ChevronRight, Calendar as CalendarIcon } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
 
 const QUICK_LINKS = [
   { id: 1, title: "ERP", iconName: "BookOpen" },
@@ -119,60 +125,74 @@ export default async function Home() {
             </Link>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <Carousel
+            opts={{
+              align: "start",
+            }}
+            className="w-full"
+          >
+            <CarouselContent className="-ml-4 sm:-ml-6">
             {events.length > 0 ? (
               events.map((event: any, idx: number) => (
-                <EventCard 
-                  key={event.id}
-                  id={event.id}
-                  title={event.title}
-                  venue={event.venue}
-                  date={event.date}
-                  imageUrl={event.imageUrl || "https://upload.wikimedia.org/wikipedia/commons/0/09/Bubai_manna_21.jpg"}
-                  tags={event.tags}
-                  index={idx}
-                  variant="compact"
-                />
+                <CarouselItem key={event.id} className="pl-4 sm:pl-6 basis-[85%] sm:basis-1/2 lg:basis-1/3">
+                  <EventCard 
+                    id={event.id}
+                    title={event.title}
+                    venue={event.venue}
+                    date={event.date}
+                    imageUrl={event.imageUrl || "https://upload.wikimedia.org/wikipedia/commons/0/09/Bubai_manna_21.jpg"}
+                    tags={event.tags}
+                    index={idx}
+                    variant="compact"
+                  />
+                </CarouselItem>
               ))
             ) : (
               // Fallback skeleton/demo cards if no events found
               <>
-                <EventCard 
-                  title="Guest Lecture by Dr. Sarah Chen"
-                  venue="Takshashila"
-                  date={new Date().toISOString()}
-                  imageUrl="https://upload.wikimedia.org/wikipedia/commons/0/09/Bubai_manna_21.jpg"
-                  tags={["ROBOTICS", "HEALTHCARE"]}
-                  index={0}
-                  variant="compact"
-                />
-                <EventCard 
-                  title="Hackathon 2026: Code Innovation"
-                  venue="Nalanda Complex"
-                  date={new Date(Date.now() + 86400000).toISOString()}
-                  imageUrl="https://upload.wikimedia.org/wikipedia/commons/2/2e/Entrance_Gate_of_IIT_Kharagpur.jpg"
-                  tags={["HACKATHON", "CODING"]}
-                  index={1}
-                  variant="compact"
-                />
-                <EventCard 
-                  title="Photography Walk"
-                  venue="Central Campus"
-                  date={new Date(Date.now() + 86400000 * 3).toISOString()}
-                  imageUrl="https://upload.wikimedia.org/wikipedia/commons/e/eb/IIT_Main_Building_1955.jpg"
-                  tags={["PHOTOGRAPHY", "CREATIVE"]}
-                  index={2}
-                  variant="compact"
-                />
+                <CarouselItem className="pl-4 sm:pl-6 basis-[85%] sm:basis-1/2 lg:basis-1/3">
+                  <EventCard 
+                    title="Guest Lecture by Dr. Sarah Chen"
+                    venue="Takshashila"
+                    date={new Date().toISOString()}
+                    imageUrl="https://upload.wikimedia.org/wikipedia/commons/0/09/Bubai_manna_21.jpg"
+                    tags={["ROBOTICS", "HEALTHCARE"]}
+                    index={0}
+                    variant="compact"
+                  />
+                </CarouselItem>
+                <CarouselItem className="pl-4 sm:pl-6 basis-[85%] sm:basis-1/2 lg:basis-1/3">
+                  <EventCard 
+                    title="Hackathon 2026: Code Innovation"
+                    venue="Nalanda Complex"
+                    date={new Date(Date.now() + 86400000).toISOString()}
+                    imageUrl="https://upload.wikimedia.org/wikipedia/commons/2/2e/Entrance_Gate_of_IIT_Kharagpur.jpg"
+                    tags={["HACKATHON", "CODING"]}
+                    index={1}
+                    variant="compact"
+                  />
+                </CarouselItem>
+                <CarouselItem className="pl-4 sm:pl-6 basis-[85%] sm:basis-1/2 lg:basis-1/3">
+                  <EventCard 
+                    title="Photography Walk"
+                    venue="Central Campus"
+                    date={new Date(Date.now() + 86400000 * 3).toISOString()}
+                    imageUrl="https://upload.wikimedia.org/wikipedia/commons/e/eb/IIT_Main_Building_1955.jpg"
+                    tags={["PHOTOGRAPHY", "CREATIVE"]}
+                    index={2}
+                    variant="compact"
+                  />
+                </CarouselItem>
               </>
             )}
-          </div>
+            </CarouselContent>
+          </Carousel>
         </section>
 
         {/* Quick Access Section */}
         <section className="flex flex-col gap-4">
           <h2 className="text-xl font-bold tracking-tight text-slate-900">Quick Access</h2>
-          <div className="grid grid-cols-4 md:grid-cols-8 gap-4 justify-items-center">
+          <div className="grid grid-cols-4 md:grid-cols-8 gap-2 sm:gap-4 justify-items-center">
             {QUICK_LINKS.map((link, idx) => (
               <QuickLinkCard 
                 key={link.id}
@@ -186,6 +206,27 @@ export default async function Home() {
         </section>
 
       </div>
+
+      {/* Call to Action Section */}
+      <section className="w-full mt-12 mb-4">
+        <div className="bg-indigo-600 rounded-3xl p-8 md:p-12 text-center text-white relative overflow-hidden shadow-xl">
+          {/* Decorative background elements */}
+          <div className="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-white opacity-10 rounded-full blur-2xl"></div>
+          <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 bg-white opacity-10 rounded-full blur-2xl"></div>
+          
+          <div className="relative z-10 max-w-2xl mx-auto">
+            <h2 className="text-3xl font-bold tracking-tight mb-4 text-white">Don't miss out on amazing events!</h2>
+            <p className="text-indigo-100 text-lg mb-8">
+              Register early and be a part of unforgettable experiences.
+            </p>
+            <Link href="/events">
+              <Button className="bg-white text-indigo-600 hover:bg-slate-100 font-bold px-8 py-6 rounded-full text-lg shadow-lg hover:shadow-xl transition-all hover:scale-105 active:scale-95">
+                Explore All Events
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
     </PageLayout>
   );
 }

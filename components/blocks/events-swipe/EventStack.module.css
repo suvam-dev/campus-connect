@@ -1,0 +1,219 @@
+.shuffleWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 1rem 0 2rem;
+}
+
+.shuffleStage {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  height: 560px;
+  margin: 0 auto;
+}
+
+/* ── Card Base ── */
+.shuffleCard {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 92%;
+  max-width: 360px;
+  background: #fff;
+  border-radius: 24px;
+  border: 1px solid #ececf3;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06), 0 1px 4px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+              opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  user-select: none;
+  touch-action: pan-y;
+  will-change: transform, opacity;
+  display: flex;
+  flex-direction: column;
+}
+
+.shuffleCard.dragging {
+  transition: none !important;
+  cursor: grabbing;
+}
+
+/* ── Front card ── */
+.shuffleFront {
+  cursor: grab;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08),
+              0 30px 60px rgba(124, 58, 237, 0.06);
+}
+
+/* ── Card image ── */
+.cardImage {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+  background: #f1f5f9;
+  pointer-events: none;
+}
+
+/* ── Category & progress row ── */
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 10px;
+}
+
+.categoryBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #f8f8fa;
+  border: 1px solid #ececf3;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #1f2937;
+}
+
+.progressText {
+  font-size: 13px;
+  font-weight: 700;
+  color: #6b7280;
+}
+
+/* ── Content area ── */
+.cardContent {
+  padding: 16px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cardTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1f2937;
+  line-height: 1.3;
+  margin: 0 0 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cardDescription {
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.5;
+  margin: 0 0 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── Meta (date, time, venue) ── */
+.metaGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.metaIcon {
+  width: 14px;
+  height: 14px;
+  color: #6b7280;
+  flex-shrink: 0;
+}
+
+.metaDivider {
+  border: none;
+  border-top: 1px solid #ececf3;
+  margin: 4px 0;
+}
+
+/* ── Action buttons ── */
+.cardActions {
+  display: flex;
+  gap: 10px;
+  padding: 4px 20px 20px;
+}
+
+.registerBtn {
+  flex: 1;
+  height: 46px;
+  border: none;
+  border-radius: 16px;
+  background: #7c3aed;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+.registerBtn:hover {
+  background: #6d28d9;
+}
+.registerBtn:active {
+  transform: scale(0.97);
+}
+
+.detailsBtn {
+  flex: 1;
+  height: 46px;
+  border: 2px solid #ececf3;
+  border-radius: 16px;
+  background: rgba(244, 242, 255, 0.5);
+  color: #1f2937;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, transform 0.15s;
+}
+.detailsBtn:hover {
+  border-color: #d4d4dd;
+  background: #f4f2ff;
+}
+.detailsBtn:active {
+  transform: scale(0.97);
+}
+
+/* ── Swipe hint ── */
+.shuffleHint {
+  margin-top: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #9ca3af;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.shuffleHint::before,
+.shuffleHint::after {
+  content: "";
+  width: 24px;
+  height: 1px;
+  background: #d1d5db;
+}
