@@ -75,3 +75,39 @@ export async function checkRegistrationStatus(eventId: string) {
     return { isRegistered: false };
   }
 }
+
+export async function getUserRegisteredEvents() {
+  try {
+    const { dbUser } = await getCurrentUser();
+    if (!dbUser) return { success: false, events: [] };
+
+    await connectDB();
+    const registrations = await Registration.find({ user: dbUser._id })
+      .populate('event')
+      .sort({ registeredAt: -1 })
+      .lean();
+    
+    // Map data safely for client consumption
+    const events = registrations
+      .filter((r: any) => r.event) // Ensure event wasn't deleted
+      .map((r: any) => {
+        const event = r.event;
+        return {
+          id: event._id.toString(),
+          title: event.title,
+          venue: event.venue,
+          date: event.date,
+          time: event.time,
+          image: event.image,
+          description: event.description,
+          status: r.status, // Registration status
+          registeredAt: r.registeredAt.toISOString(),
+        };
+      });
+
+    return { success: true, events };
+  } catch (err: any) {
+    console.error("getUserRegisteredEvents error:", err);
+    return { success: false, events: [] };
+  }
+}

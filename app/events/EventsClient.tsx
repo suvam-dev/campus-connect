@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { PageLayout } from '@/components/layouts';
 import { EmptyState } from '@/components/shared';
 import { EventCard } from '@/components/EventCard';
+import { ImagesVariant } from '@/components/blocks/demo';
 import { 
   Search, SlidersHorizontal, ChevronDown, Calendar, 
   Terminal, Theater, Wrench, Mic, BookOpen, Trophy, ArrowRight
@@ -143,7 +144,7 @@ export default function EventsClient({ initialEvents }: { initialEvents: any[] }
                 title={event.title}
                 venue={event.venue}
                 date={`${event.date} ${event.time}`}
-                imageUrl={event.imageUrl || undefined}
+                imageUrl={event.image || undefined}
                 tags={event.tags}
                 index={idx}
              />
@@ -180,6 +181,10 @@ export default function EventsClient({ initialEvents }: { initialEvents: any[] }
         </Link>
       </div>
 
+      {/* Mobile Preview Variant as requested */}
+      <div className="block md:hidden mt-8 rounded-3xl overflow-hidden">
+        <ImagesVariant />
+      </div>
       </div>
     </PageLayout>
   );

@@ -35,7 +35,7 @@ export default async function Home() {
     title: e.title,
     venue: e.venue,
     date: `${e.date} ${e.time}`,
-    imageUrl: e.imageUrl,
+    imageUrl: e.image,
     tags: e.tags || [],
   }));
   

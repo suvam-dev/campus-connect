@@ -18,5 +18,10 @@ export default async function ProfilePage() {
     redirect("/");
   }
 
-  return <ProfileClient initialProfile={data.profile} stats={data.stats} />;
+  // Fetch registered events
+  const { getUserRegisteredEvents } = await import('@/app/actions/registrationActions');
+  const registeredEventsRes = await getUserRegisteredEvents();
+  const registeredEvents = registeredEventsRes.events || [];
+
+  return <ProfileClient initialProfile={data.profile} stats={data.stats} registeredEvents={registeredEvents} />;
 }

@@ -24,7 +24,7 @@ const profileSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
-export default function ProfileClient({ initialProfile, stats }: { initialProfile: Record<string, any>, stats: Record<string, any> }) {
+export default function ProfileClient({ initialProfile, stats, registeredEvents = [] }: { initialProfile: Record<string, any>, stats: Record<string, any>, registeredEvents?: any[] }) {
   const [isPending, startTransition] = useTransition();
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
