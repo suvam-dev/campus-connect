@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowLeft, Building2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createSociety } from "@/app/actions/societyActions";
@@ -18,13 +18,13 @@ function toSlug(name: string): string {
 }
 
 export default function NewSocietyPage() {
-  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
   const [name, setName] = useState("");
   const [slugEdited, setSlugEdited] = useState(false);
   const [slug, setSlug] = useState("");
+  const [logoUrl, setLogoUrl] = useState("");
 
   function handleNameChange(e: React.ChangeEvent<HTMLInputElement>) {
     const val = e.target.value;
@@ -157,11 +157,26 @@ export default function NewSocietyPage() {
             Logo
           </h2>
           <div className="flex items-start gap-5">
-            <div className="h-16 w-16 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center shrink-0">
-              <Building2 className="h-7 w-7 text-indigo-400" />
+            {/* Live preview thumbnail */}
+            <div className="h-16 w-16 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center shrink-0 overflow-hidden">
+              {logoUrl ? (
+                <Image
+                  src={logoUrl}
+                  alt="Society logo preview"
+                  width={64}
+                  height={64}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <Building2 className="h-7 w-7 text-indigo-400" />
+              )}
             </div>
             <div className="flex-1">
-              <ImageUpload name="logo" />
+              <ImageUpload
+                name="logo"
+                defaultValue={logoUrl}
+                onChange={(url) => setLogoUrl(url)}
+              />
               <p className="mt-2 text-xs text-slate-400">
                 Recommended: 256×256px PNG or SVG. Displayed on society cards and the admin panel.
               </p>
